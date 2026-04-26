@@ -1,26 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* ============================================================
+   DESIGN TOKENS — FoodAI Light Theme (3 colours)
+   ============================================================
+   1. Cream        #FAF7F2  – backgrounds, surface
+   2. Forest Green #2D6A4F  – primary, CTAs, accents
+   3. Warm Charcoal #1C1C1E – text, headings
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cream:         #FAF7F2;
+  --cream-100:     #F5F0E8;
+  --cream-200:     #EDE5D5;
+
+  --green-50:      #EAF3EE;
+  --green-100:     #C3DDD1;
+  --green-200:     #8BBFAB;
+  --green-500:     #2D6A4F;
+  --green-600:     #24573F;
+  --green-700:     #1B4530;
+
+  --charcoal:      #1C1C1E;
+  --charcoal-400:  #6B6B6E;
+  --charcoal-200:  #AEAEB2;
+  --charcoal-100:  #D1D1D6;
+
+  --background:    var(--cream);
+  --surface:       #FFFFFF;
+  --primary:       var(--green-500);
+  --primary-hover: var(--green-600);
+  --text-primary:  var(--charcoal);
+  --text-secondary: var(--charcoal-400);
+  --border:        var(--cream-200);
+
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   32px;
+  --radius-full: 9999px;
+
+  --shadow-sm:  0 1px 3px rgba(28,28,30,.06), 0 1px 2px rgba(28,28,30,.04);
+  --shadow-md:  0 4px 16px rgba(28,28,30,.08), 0 2px 8px rgba(28,28,30,.04);
+  --shadow-lg:  0 8px 32px rgba(28,28,30,.10), 0 4px 16px rgba(28,28,30,.06);
+  --shadow-xl:  0 20px 60px rgba(28,28,30,.12);
+
+  --transition:      0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-slow: 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html  { font-size: 16px; scroll-behavior: smooth; }
+body  {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+h1,h2,h3,h4,h5,h6 { letter-spacing: -0.02em; line-height: 1.2; }
+p  { line-height: 1.6; }
+a  { text-decoration: none; color: inherit; }
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream-100); }
+::-webkit-scrollbar-thumb { background: var(--charcoal-100); border-radius: 99px; }
+
+/* ── Focus ─────────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes fadeInUp   { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+@keyframes fadeIn     { from { opacity:0 } to { opacity:1 } }
+@keyframes slideInRight { from { opacity:0; transform:translateX(20px) } to { opacity:1; transform:translateX(0) } }
+@keyframes spin       { to { transform: rotate(360deg) } }
+@keyframes typing-dot { 0%,80%,100% { transform:scale(.6); opacity:.4 } 40% { transform:scale(1); opacity:1 } }
+
+.animate-fade-in-up { animation: fadeInUp  .5s var(--transition) both; }
+.animate-fade-in    { animation: fadeIn    .4s ease both; }
+.animate-slide-in   { animation: slideInRight .35s ease both; }
+
+/* ── Hover states (cannot be inline) ──────────────────────── */
+.mode-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--green-100) !important;
+}
+.dish-card-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Page wrapper ──────────────────────────────────────────── */
+.page-wrapper {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   NAVBAR
+───────────────────────────────────────────────────────────── */
+.nav-desktop-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.nav-cta-desktop { display: flex; }
+.nav-hamburger   { display: none; }
+
+/* ─────────────────────────────────────────────────────────────
+   HERO GRID  (2-col on desktop → 1-col on tablet/mobile)
+───────────────────────────────────────────────────────────── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.hero-image-col {
+  display: flex;
+  justify-content: center;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CTA BANNER  (row on desktop → column on mobile)
+───────────────────────────────────────────────────────────── */
+.cta-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DISH-DETAIL: 2-col layout
+───────────────────────────────────────────────────────────── */
+.dish-detail-cols {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PERSONALIZED FORM: 2-col fields
+───────────────────────────────────────────────────────────── */
+.form-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FILTER BAR: horizontal scroll on mobile
+───────────────────────────────────────────────────────────── */
+.filter-pills-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HERO ACTIONS: wrap on small screens
+───────────────────────────────────────────────────────────── */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PROGRESS BAR: allow label hide on very small screens
+───────────────────────────────────────────────────────────── */
+.progress-label-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS
+───────────────────────────────────────────────────────────── */
+
+/* Tablet (≤ 900px) */
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .hero-image-col {
+    order: -1;   /* image above text on mobile */
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Large phone / small tablet (≤ 768px) */
+@media (max-width: 768px) {
+  .dish-detail-cols {
+    grid-template-columns: 1fr;
+  }
+  .form-two-col {
+    grid-template-columns: 1fr;
+  }
+  .cta-banner-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Mobile (≤ 640px) */
+@media (max-width: 640px) {
+  .page-wrapper { padding-inline: 1rem; }
+
+  /* Navbar: hide desktop links, show hamburger */
+  .nav-desktop-links { display: none; }
+  .nav-cta-desktop   { display: none; }
+  .nav-hamburger     { display: flex; }
+
+  /* Filter scrollable row */
+  .filter-pills-scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .filter-pills-scroll::-webkit-scrollbar { display: none; }
+
+  /* Progress labels hidden on very small screens */
+  .progress-label-text { display: none; }
+
+  /* Image column takes full width */
+  .hero-image-col { width: 100%; justify-content: center; }
+
+  /* Reduce hero section vertical padding */
+  .hero-section { padding: 36px 0 56px !important; }
+
+  /* CTA banner stacks */
+  .cta-banner-inner { flex-direction: column; align-items: flex-start; }
+  .cta-banner-inner a { width: 100%; justify-content: center; text-align: center; }
+}
+
+/* Very small phones (≤ 400px) */
+@media (max-width: 400px) {
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions a { text-align: center; justify-content: center; width: 100%; }
+
+  /* Chatbot drawer full-width on tiny phones */
+  .chatbot-drawer {
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
 }
