@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Flame, Beef, Wheat, Droplets, List, CheckCircle, User, BookOpen } from "lucide-react";
-import { fetchDishById } from "../../../lib/api";
+import { ArrowLeft, Clock, Flame, Beef, Wheat, Droplets, List, CheckCircle, User, BookOpen, Heart } from "lucide-react";
+import { fetchDishById, recommendationReasons } from "../../../lib/api";
 import { dishes } from "../../../lib/mockData";
 import Badge from "../../components/ui/Badge";
 
@@ -140,6 +140,31 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
                 ))}
               </ol>
             </section>
+
+            {/* Dietary Benefits */}
+            <section style={styles.card} aria-label="Dietary benefits">
+              <h2 style={styles.cardTitle}>
+                <Heart size={18} color="var(--green-500)" /> Dietary Benefits
+              </h2>
+              <ul style={styles.ingredientList}>
+                <li style={styles.ingredientItem}>
+                  <span style={styles.bullet} />
+                  {recommendationReasons[dish.id] || "A highly nutritious and culturally rich meal."}
+                </li>
+                {dish.dietaryLabels.map(label => (
+                  <li key={label} style={styles.ingredientItem}>
+                    <span style={styles.bullet} />
+                    {label.replace(/-/g, ' ')}
+                  </li>
+                ))}
+                {dish.suitableFor.map(suit => (
+                  <li key={suit} style={styles.ingredientItem}>
+                    <span style={styles.bullet} />
+                    Supports {suit.toLowerCase()}
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
         </div>
 
@@ -216,7 +241,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "20px", alignItems: "start",
   },
   leftCol: { display: "flex", flexDirection: "column", gap: "20px" },
-  rightCol: {},
+  rightCol: { display: "flex", flexDirection: "column", gap: "20px" },
   card: {
     backgroundColor: "var(--surface)", border: "1px solid var(--border)",
     borderRadius: "var(--radius-lg)", padding: "24px 28px", boxShadow: "var(--shadow-sm)",

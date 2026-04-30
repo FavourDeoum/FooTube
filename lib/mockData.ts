@@ -287,6 +287,431 @@ export const dishes: Dish[] = [
       "Stir in washed rice, cover tightly, and steam on low heat until the liquid is absorbed."
     ],
     nutrition: { calories: 450, protein: 12, carbs: 75, fat: 12, fiber: 4 }
+  },
+  {
+    id: "bitterleaf-soup",
+    name: "Bitterleaf Soup",
+    shortDescription: "A savory, slightly bitter and highly nutritious soup.",
+    description: "Bitterleaf soup is a popular traditional dish across West Africa, known for its unique flavor profile combining the slight bitterness of washed leaves with rich meats, fish, and cocoyam paste acting as a thickener.",
+    image: "/Bitterleaf soup.jpeg",
+    category: "Soup",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Fiber", "Low-Carb"],
+    suitableFor: ["Digestive Health", "Immune Support"],
+    ingredients: ["Washed bitter leaves", "Assorted meats", "Smoked fish", "Cocoyam (thickener)", "Crayfish", "Palm oil"],
+    preparationSteps: [
+      "Boil meats and stockfish until tender.",
+      "Add palm oil and blended cocoyam to thicken the broth.",
+      "Stir in washed bitter leaves and simmer gently.",
+      "Season with crayfish and spices, cooking until flavors meld."
+    ],
+    nutrition: { calories: 450, protein: 35, carbs: 15, fat: 28, fiber: 12 }
+  },
+  {
+    id: "egusi-soup",
+    name: "Egusi Soup",
+    shortDescription: "Rich, nutty soup made with ground melon seeds.",
+    description: "Egusi soup is a beloved West African classic. Ground melon seeds are cooked with palm oil, leafy greens, and a variety of meats or fish to create a hearty, protein-packed soup that's incredibly satisfying.",
+    image: "/Egusi soup.jpeg",
+    category: "Soup",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Protein", "Keto-Friendly"],
+    suitableFor: ["Muscle Building", "Low Carb Diets"],
+    ingredients: ["Ground Egusi (melon seeds)", "Palm oil", "Spinach or bitter leaves", "Assorted meats", "Stockfish", "Crayfish"],
+    preparationSteps: [
+      "Boil the meats and fish to create a flavorful stock.",
+      "Toast or fry the ground egusi in palm oil.",
+      "Combine the egusi with the meat stock and simmer.",
+      "Add leafy greens and final seasonings, cooking until wilted."
+    ],
+    nutrition: { calories: 550, protein: 42, carbs: 12, fat: 40, fiber: 8 }
+  },
+  {
+    id: "garri-okro",
+    name: "Garri and Okro",
+    shortDescription: "A comforting combo of fermented cassava and slippery okro soup.",
+    description: "A quick, satisfying, and deeply traditional meal. Garri (cassava flakes) is prepared as a swallow and served with Okro soup, famous for its thick, viscous texture and savory taste.",
+    image: "/Garri and Okro.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Dairy-Free", "High-Fiber"],
+    suitableFor: ["Digestive Health", "Quick Meals"],
+    ingredients: ["Garri (cassava flakes)", "Fresh okro", "Palm oil", "Fish or meat", "Crayfish"],
+    preparationSteps: [
+      "Pour hot water over garri and stir to form a firm dough.",
+      "Chop or grate the okro.",
+      "Cook meats and make a light broth with palm oil.",
+      "Add the okro and simmer briefly to retain its crunch and viscosity."
+    ],
+    nutrition: { calories: 400, protein: 20, carbs: 65, fat: 12, fiber: 10 }
+  },
+  {
+    id: "mbongo-tchobi",
+    name: "Mbongo Tchobi",
+    shortDescription: "A dark, aromatic, and spicy tomato-based fish stew.",
+    description: "Mbongo Tchobi is a signature dish from the coastal regions of Cameroon. Its striking dark color comes from the burnt mbongo spice. It's an intensely flavorful, earthy stew often made with white fish and served with plantains.",
+    image: "/Mbongo Tchobi.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Pescatarian", "High-Protein", "Dairy-Free"],
+    suitableFor: ["Heart Health", "Flavor Enthusiasts"],
+    ingredients: ["White fish (Catfish or similar)", "Mbongo spice blend", "Tomatoes", "Onions", "Garlic and ginger", "Peanut oil"],
+    preparationSteps: [
+      "Clean the fish and set aside.",
+      "Blend tomatoes, onions, garlic, ginger, and the dark mbongo spice.",
+      "Fry the blended mixture in oil until fragrant and thickened.",
+      "Gently add the fish, simmer until cooked through."
+    ],
+    nutrition: { calories: 420, protein: 38, carbs: 18, fat: 22, fiber: 5 }
+  },
+  {
+    id: "njangsa-soup",
+    name: "Njangsa Soup",
+    shortDescription: "A nutty, spicy, and fragrant soup made with Njangsa seeds.",
+    description: "Njangsa soup uses the uniquely aromatic crushed seeds of the Njangsa tree, which naturally thickens the broth and imparts a distinctive, slightly nutty flavor. Often paired with fresh fish and ripe plantains.",
+    image: "/Njangsa soup & ripe plantain.jpeg",
+    category: "Soup",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Pescatarian", "Low-Carb"],
+    suitableFor: ["Bone Health", "Immune Support"],
+    ingredients: ["Fresh fish", "Njangsa seeds", "Tomatoes", "Onions", "Spices", "Oil"],
+    preparationSteps: [
+      "Toast and grind the njangsa seeds.",
+      "Blend tomatoes, onions, and the ground njangsa.",
+      "Cook the mixture to form a rich sauce.",
+      "Add the fresh fish and simmer until the fish is tender and the sauce is perfectly combined."
+    ],
+    nutrition: { calories: 380, protein: 35, carbs: 12, fat: 20, fiber: 4 }
+  },
+  {
+    id: "plantain-porridge",
+    name: "Plantain Porridge",
+    shortDescription: "A hearty, one-pot dish of simmered plantains and vegetables.",
+    description: "Plantain porridge is a comforting, rustic meal where unripe or semi-ripe plantains are cooked down in a flavorful broth with palm oil, leafy greens, and dried fish, resulting in a rich, thick stew.",
+    image: "/Plaintain Porridge.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Iron", "Dairy-Free"],
+    suitableFor: ["Energy Boost", "Anemia Prevention"],
+    ingredients: ["Unripe or semi-ripe plantains", "Palm oil", "Leafy greens", "Dried fish", "Crayfish"],
+    preparationSteps: [
+      "Peel and dice the plantains.",
+      "Boil the plantains with water, dried fish, and seasonings.",
+      "Add palm oil and allow the starch from the plantains to thicken the broth.",
+      "Stir in leafy greens at the end and simmer briefly."
+    ],
+    nutrition: { calories: 450, protein: 18, carbs: 75, fat: 15, fiber: 9 }
+  },
+  {
+    id: "puff-puff-beans",
+    name: "Puff Puff and Beans",
+    shortDescription: "A sweet and savory classic street food combination.",
+    description: "A beloved Cameroonian breakfast and street food! It combines the fluffy, sweet, deep-fried dough balls known as Puff Puff with savory, warmly spiced stewed beans. The contrast of flavors and textures is irresistible.",
+    image: "/Puff Puff and Beans_ CAMEROONIAN Food_.jpg",
+    category: "Breakfast",
+    mealType: ["Breakfast", "Snack"],
+    dietaryLabels: ["Vegetarian", "High-Calorie"],
+    suitableFor: ["Quick Energy", "Comfort Eating"],
+    ingredients: ["Flour", "Yeast", "Sugar", "Beans", "Palm oil or vegetable oil", "Onions"],
+    preparationSteps: [
+      "Mix flour, yeast, sugar, and water into a batter and let it rise.",
+      "Deep fry spoonfuls of the batter until golden brown to make Puff Puff.",
+      "Boil beans until tender and fry with onions, tomatoes, and spices to make the bean stew.",
+      "Serve the hot Puff Puff alongside the savory beans."
+    ],
+    nutrition: { calories: 580, protein: 16, carbs: 85, fat: 22, fiber: 10 }
+  },
+  {
+    id: "kati-kati",
+    name: "Kati Kati",
+    shortDescription: "Roasted chicken sautéed in a spicy, palm oil-rich sauce.",
+    description: "Kati Kati is a delicacy from the Northwest region of Cameroon. It involves roasting chicken over an open flame, then chopping and simmering it in a rich, spicy palm oil sauce. Best enjoyed with fufu corn.",
+    image: "/Kati kati and Cameroonian Style Turnip greens  – AFROVITALITYEATS.jpg",
+    category: "Protein",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Protein", "Keto-Friendly"],
+    suitableFor: ["Muscle Recovery", "Flavor Enthusiasts"],
+    ingredients: ["Hard chicken (free-range)", "Palm oil", "Tomatoes", "Habanero peppers", "Traditional spices"],
+    preparationSteps: [
+      "Roast the whole chicken over an open fire until slightly charred, then chop into pieces.",
+      "Sauté tomatoes and intense peppers in palm oil.",
+      "Add the roasted chicken pieces and traditional spices.",
+      "Simmer until the chicken absorbs the spicy, smoky flavors."
+    ],
+    nutrition: { calories: 420, protein: 45, carbs: 8, fat: 25, fiber: 3 }
+  },
+  {
+    id: "suya",
+    name: "Suya",
+    shortDescription: "Spicy, grilled meat skewers coated in a peanut-based rub.",
+    description: "A wildly popular West African street food. Thinly sliced beef or chicken is heavily coated in 'yaji'—a complex, spicy peanut spice blend—and grilled over open coals. It's smoky, nutty, and fiery.",
+    image: "/dish-suya.png",
+    category: "Snack",
+    mealType: ["Snack", "Dinner"],
+    dietaryLabels: ["High-Protein", "Low-Carb"],
+    suitableFor: ["Quick Snacks", "Muscle Building"],
+    ingredients: ["Beef or Chicken", "Suya spice (Yaji: peanuts, ginger, pepper, etc.)", "Vegetable oil", "Onions for garnish"],
+    preparationSteps: [
+      "Thinly slice the meat and thread onto skewers.",
+      "Generously coat the meat in the suya spice blend and drizzle with oil.",
+      "Grill over hot coals until charred and cooked through.",
+      "Serve hot with sliced raw onions and extra spice."
+    ],
+    nutrition: { calories: 300, protein: 35, carbs: 5, fat: 18, fiber: 2 }
+  },
+  {
+    id: "moi-moi",
+    name: "Moi Moi",
+    shortDescription: "Savory, steamed bean pudding rich in protein.",
+    description: "Moi Moi is a deeply flavorful, protein-rich steamed pudding made from blended black-eyed peas, peppers, onions, and oil. It can be studded with hard-boiled eggs, fish, or corned beef.",
+    image: "/dish-moi-moi.png",
+    category: "Protein",
+    mealType: ["Breakfast", "Lunch", "Snack"],
+    dietaryLabels: ["High-Protein", "Gluten-Free", "Vegetarian-Option"],
+    suitableFor: ["Muscle Building", "Healthy Snacking"],
+    ingredients: ["Black-eyed peas", "Red bell peppers", "Onions", "Vegetable oil or Palm oil", "Hard-boiled eggs or fish"],
+    preparationSteps: [
+      "Soak and peel the black-eyed peas.",
+      "Blend the peeled beans with peppers, onions, and water into a smooth batter.",
+      "Mix in oil, seasonings, and add-ins like eggs or flaked fish.",
+      "Pour into containers or leaves and steam until set."
+    ],
+    nutrition: { calories: 320, protein: 18, carbs: 35, fat: 14, fiber: 8 }
+  },
+  {
+    id: "white-bean-stew",
+    name: "White Bean Stew",
+    shortDescription: "A hearty and creamy white bean stew.",
+    description: "A comforting stew made with white beans, perfectly cooked until creamy and tender, seasoned with local spices and rich oils for a deep, savory flavor profile.",
+    image: "/WHITE BEAN STEW.jpg",
+    category: "Protein",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Protein", "High-Fiber", "Vegan-Option"],
+    suitableFor: ["Digestive Health", "Sustained Energy"],
+    ingredients: ["White beans", "Onions", "Tomatoes", "Vegetable oil", "Spices"],
+    preparationSteps: [
+      "Soak white beans to reduce cooking time.",
+      "Boil until soft and creamy.",
+      "Prepare a flavorful tomato and onion base.",
+      "Combine and simmer until the flavors meld."
+    ],
+    nutrition: { calories: 410, protein: 22, carbs: 60, fat: 10, fiber: 15 }
+  },
+  {
+    id: "stewed-irish-porridge",
+    name: "Stewed Irish Porridge",
+    shortDescription: "A robust one-pot potato porridge.",
+    description: "A satisfying one-pot dish where Irish potatoes are stewed down in a rich tomato and meat broth, absorbing all the robust flavors while naturally thickening the sauce.",
+    image: "/Stewed Irish Porridge.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Carb", "Dairy-Free"],
+    suitableFor: ["Energy Boost", "Comfort Eating"],
+    ingredients: ["Irish potatoes", "Tomatoes", "Beef or chicken", "Spices", "Carrots"],
+    preparationSteps: [
+      "Peel and cube the Irish potatoes.",
+      "Brown the meat and create a savory stew base.",
+      "Add potatoes and broth, simmering until tender and the sauce is thick."
+    ],
+    nutrition: { calories: 450, protein: 15, carbs: 55, fat: 18, fiber: 6 }
+  },
+  {
+    id: "mbongo-tchobi-plantain",
+    name: "Mbongo Tchobi & Ripe Plantains",
+    shortDescription: "Dark spicy stew served with sweet ripe plantains.",
+    description: "The classic pairing of the earthy, dark, and intensely spiced Mbongo Tchobi fish stew with perfectly sweet and soft boiled or fried ripe plantains.",
+    image: "/Mbongo Tchobi & ripe plantains.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Pescatarian", "Dairy-Free"],
+    suitableFor: ["Heart Health", "Flavor Enthusiasts"],
+    ingredients: ["Fish", "Mbongo spice", "Tomatoes", "Ripe plantains", "Oil"],
+    preparationSteps: [
+      "Prepare the Mbongo Tchobi stew by frying the dark spice blend with tomatoes.",
+      "Simmer the fish gently in the dark sauce.",
+      "Boil or fry the ripe plantains and serve alongside."
+    ],
+    nutrition: { calories: 510, protein: 35, carbs: 60, fat: 20, fiber: 7 }
+  },
+  {
+    id: "porridge-irish-potatoes",
+    name: "Porridge Irish Potatoes",
+    shortDescription: "Irish potatoes cooked down into a rich porridge.",
+    description: "A hearty porridge made by cooking Irish potatoes with palm oil, crayfish, and leafy greens, resulting in a savory, thick, and highly comforting meal.",
+    image: "/PorridgedIrish Potatoes.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Carb", "Dairy-Free"],
+    suitableFor: ["Energy Boost", "Comfort Eating"],
+    ingredients: ["Irish potatoes", "Palm oil", "Crayfish", "Smoked fish", "Leafy greens"],
+    preparationSteps: [
+      "Peel and cut the potatoes.",
+      "Boil with smoked fish, crayfish, and seasonings.",
+      "Stir in palm oil and let it thicken naturally.",
+      "Add greens at the end."
+    ],
+    nutrition: { calories: 480, protein: 14, carbs: 65, fat: 20, fiber: 8 }
+  },
+  {
+    id: "okongobong-calaba-yam",
+    name: "Okongobong and Calaba Yam",
+    shortDescription: "A traditional pairing of vegetable stew and root yam.",
+    description: "A cherished meal featuring Okongobong (pumpkin leaves) deliciously stewed with meats and crayfish, served alongside deeply earthy and starchy Calaba yam.",
+    image: "/Okongobong and Calaba yam.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Fiber", "High-Carb"],
+    suitableFor: ["Sustained Energy", "Digestive Health"],
+    ingredients: ["Calaba yam", "Okongobong (pumpkin leaves)", "Palm oil", "Smoked meat", "Spices"],
+    preparationSteps: [
+      "Boil the Calaba yam until tender.",
+      "Prepare a rich base with palm oil and meats.",
+      "Add the chopped Okongobong and simmer briefly to retain nutrients."
+    ],
+    nutrition: { calories: 520, protein: 18, carbs: 70, fat: 22, fiber: 12 }
+  },
+  {
+    id: "groundnut-paste-cassava",
+    name: "Groundnut Paste and Cassava",
+    shortDescription: "Boiled cassava served with a rich peanut sauce.",
+    description: "A simple, highly nutritious, and satisfying meal consisting of tender boiled cassava dipped into a savory, creamy, and slightly spicy groundnut (peanut) paste.",
+    image: "/Groundnut paste and cassava.jpeg",
+    category: "Traditional",
+    mealType: ["Breakfast", "Snack", "Lunch"],
+    dietaryLabels: ["Vegan-Option", "Gluten-Free"],
+    suitableFor: ["Energy Boost", "Plant-based Diets"],
+    ingredients: ["Cassava tubers", "Roasted groundnuts", "Garlic", "Ginger", "Pepper"],
+    preparationSteps: [
+      "Peel and boil the cassava until completely tender.",
+      "Blend roasted groundnuts with garlic, ginger, pepper, and water.",
+      "Cook the paste slightly to release the oils, and serve as a dip."
+    ],
+    nutrition: { calories: 460, protein: 12, carbs: 68, fat: 20, fiber: 9 }
+  },
+  {
+    id: "garri-eru",
+    name: "Garri & Eru",
+    shortDescription: "A classic combination of cassava swallow and wild leaf soup.",
+    description: "The ultimate pairing for Eru lovers—served with hot, smoothly prepared Garri (cassava swallow) that perfectly complements the rich, palm-oil heavy Eru soup.",
+    image: "/Garri & Eru.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Fiber", "High-Calorie"],
+    suitableFor: ["Sustained Energy"],
+    ingredients: ["Garri", "Eru leaves", "Waterleaf", "Palm oil", "Assorted meats"],
+    preparationSteps: [
+      "Prepare the Eru soup with palm oil, waterleaf, and meats.",
+      "Boil water and stir in Garri until a firm dough forms.",
+      "Serve the hot swallow with the rich soup."
+    ],
+    nutrition: { calories: 610, protein: 32, carbs: 65, fat: 30, fiber: 14 }
+  },
+  {
+    id: "fufu-egusi",
+    name: "Fufu & Egusi Soup",
+    shortDescription: "Soft fufu served with hearty melon seed soup.",
+    description: "A match made in heaven. The pillowy softness of Fufu acts as the perfect vehicle for scooping up the textured, nutty, and highly savory Egusi soup.",
+    image: "/Fufu & Egusi soup.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Protein", "High-Calorie"],
+    suitableFor: ["Muscle Building", "Comfort Eating"],
+    ingredients: ["Cassava fufu", "Ground egusi", "Palm oil", "Meats", "Leafy greens"],
+    preparationSteps: [
+      "Prepare the Egusi soup with a rich meat stock and palm oil.",
+      "Cook the fufu dough until smooth and elastic.",
+      "Serve together."
+    ],
+    nutrition: { calories: 680, protein: 40, carbs: 75, fat: 35, fiber: 10 }
+  },
+  {
+    id: "ekwang-authentic",
+    name: "Authentic Ekwang",
+    shortDescription: "Grated cocoyam wrapped in leaves, stewed to perfection.",
+    description: "A labor-intensive but incredibly rewarding dish of grated cocoyam rolled in cocoyam leaves, slow-cooked in a rich broth of palm oil, crayfish, and smoked fish.",
+    image: "/Ekwang.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Gluten-Free", "High-Fiber"],
+    suitableFor: ["Special Occasions", "Digestive Health"],
+    ingredients: ["Grated cocoyam", "Cocoyam leaves", "Palm oil", "Periwinkles", "Smoked fish"],
+    preparationSteps: [
+      "Grate the cocoyam and wrap small amounts in the leaves.",
+      "Arrange the wraps in a pot over a bed of periwinkles.",
+      "Add broth, palm oil, and fish, simmering gently."
+    ],
+    nutrition: { calories: 580, protein: 22, carbs: 60, fat: 28, fiber: 12 }
+  },
+  {
+    id: "ekwang-special",
+    name: "Special Ekwang",
+    shortDescription: "A premium variation of the classic Ekwang.",
+    description: "This special variant of Ekwang includes extra assorted meats, fresh periwinkles, and a richer palm oil base for an even more decadent dining experience.",
+    image: "/Ekwang2.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Gluten-Free", "High-Protein"],
+    suitableFor: ["Special Occasions", "Sustained Energy"],
+    ingredients: ["Grated cocoyam", "Leaves", "Assorted meats", "Periwinkles", "Palm oil"],
+    preparationSteps: [
+      "Prepare as authentic Ekwang, but load the broth heavily with extra proteins.",
+      "Simmer until the cocoyam is tender and has absorbed the rich flavors."
+    ],
+    nutrition: { calories: 650, protein: 30, carbs: 58, fat: 34, fiber: 12 }
+  },
+  {
+    id: "cornchaff-2",
+    name: "Classic Cornchaff",
+    shortDescription: "A savory mix of corn and beans.",
+    description: "Another excellent presentation of Cornchaff, showcasing the perfect marriage of sweet corn kernels and earthy beans, deeply stewed with palm oil and smoked flavors.",
+    image: "/CornChaff.jpeg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["High-Fiber", "High-Protein"],
+    suitableFor: ["Heart Health", "Muscle Building"],
+    ingredients: ["Corn kernels", "Beans", "Palm oil", "Smoked fish", "Onions"],
+    preparationSteps: [
+      "Boil corn and beans together.",
+      "Fry a base of palm oil, onions, and fish.",
+      "Combine and simmer to a stew-like consistency."
+    ],
+    nutrition: { calories: 480, protein: 22, carbs: 65, fat: 18, fiber: 15 }
+  },
+  {
+    id: "kwacoco-bible",
+    name: "Kwacoco Bible",
+    shortDescription: "Steamed cocoyam pudding packed with spinach and fish.",
+    description: "A beloved dish from the Bakweri people. Grated cocoyam is mixed with palm oil, spinach, smoked fish, and spices, wrapped tightly in plantain leaves, and steamed until firm.",
+    image: "/Kwacoco Bible.jpg",
+    category: "Traditional",
+    mealType: ["Lunch", "Dinner"],
+    dietaryLabels: ["Gluten-Free", "High-Fiber"],
+    suitableFor: ["Plant-based Diets", "Digestive Health"],
+    ingredients: ["Grated cocoyam", "Spinach", "Palm oil", "Smoked fish", "Plantain leaves"],
+    preparationSteps: [
+      "Grate the cocoyam and mix with palm oil and spices.",
+      "Fold in chopped spinach and flaked smoked fish.",
+      "Wrap portions in warmed plantain leaves and steam until cooked through."
+    ],
+    nutrition: { calories: 450, protein: 18, carbs: 55, fat: 20, fiber: 10 }
+  },
+  {
+    id: "egusi-pudding",
+    name: "Egusi Pudding",
+    shortDescription: "A steamed, savory cake made from melon seeds.",
+    description: "A delicious, protein-dense steamed pudding made by blending Egusi (melon seeds) with meats or fish, bound together and steamed in banana leaves. It has a beautiful spongy texture.",
+    image: "/Egusi Pudding.jpg",
+    category: "Protein",
+    mealType: ["Lunch", "Snack"],
+    dietaryLabels: ["High-Protein", "Keto-Friendly"],
+    suitableFor: ["Muscle Recovery", "Low Carb Diets"],
+    ingredients: ["Ground Egusi", "Meats or fish", "Spices", "Water", "Banana leaves"],
+    preparationSteps: [
+      "Blend egusi into a paste with water and spices.",
+      "Mix in chopped cooked meats or fish.",
+      "Wrap in banana leaves and steam until firm and cake-like."
+    ],
+    nutrition: { calories: 410, protein: 35, carbs: 10, fat: 28, fiber: 6 }
   }
 ];
 
@@ -305,4 +730,27 @@ export const recommendationReasons: Record<string, string> = {
   beans: "Incredible source of fiber and heart-healthy plant protein.",
   ekwang: "Nutrient-dense with high fiber and essential minerals from periwinkles.",
   "jellof-rice": "A satisfying one-pot meal that provides lasting energy.",
+  "bitterleaf-soup": "Highly nutritious with detoxifying properties and rich in fiber.",
+  "egusi-soup": "Packed with healthy fats and protein for sustained energy and muscle support.",
+  "garri-okro": "A great source of dietary fiber that promotes digestive health.",
+  "mbongo-tchobi": "A flavorful pescatarian option packed with lean protein and distinct spices.",
+  "njangsa-soup": "Nutrient-dense with unique aromatic spices that support overall wellness.",
+  "plantain-porridge": "Loaded with complex carbohydrates and iron for lasting vitality.",
+  "puff-puff-beans": "A classic sweet and savory combo providing an excellent energy boost.",
+  "kati-kati": "A high-protein, smoky delight perfect for keto and low-carb diets.",
+  suya: "A low-carb, protein-packed snack with a satisfying, nutty crunch.",
+  "moi-moi": "An excellent gluten-free source of plant-based protein and fiber.",
+  "white-bean-stew": "A comforting, high-fiber meal that promotes digestive wellness.",
+  "stewed-irish-porridge": "Provides excellent complex carbs and warmth for sustained energy.",
+  "mbongo-tchobi-plantain": "A flavor-packed pescatarian combo with great potassium from plantains.",
+  "porridge-irish-potatoes": "A thick, deeply satisfying stew that offers a great energy boost.",
+  "okongobong-calaba-yam": "Rich in essential vitamins from pumpkin leaves and starchy energy.",
+  "groundnut-paste-cassava": "A nutrient-dense pairing offering healthy fats and gluten-free carbs.",
+  "garri-eru": "A deeply traditional, high-fiber powerhouse that keeps you full for hours.",
+  "fufu-egusi": "A highly satiating, protein-rich combination perfect for muscle recovery.",
+  "ekwang-authentic": "A labor of love that delivers incredible traditional flavors and fiber.",
+  "ekwang-special": "An elevated, protein-packed variant of the beloved cocoyam classic.",
+  "cornchaff-2": "A fantastic plant-based protein and fiber mix for heart health.",
+  "kwacoco-bible": "A wonderful steamed dish packed with iron-rich spinach and healthy fats.",
+  "egusi-pudding": "A keto-friendly, high-protein steamed delicacy that is highly satisfying.",
 };
