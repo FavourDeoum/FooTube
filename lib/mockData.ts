@@ -627,37 +627,40 @@ export const dishes: Dish[] = [
   {
     id: "ekwang-authentic",
     name: "Authentic Ekwang",
-    shortDescription: "Grated cocoyam wrapped in leaves, stewed to perfection.",
-    description: "A labor-intensive but incredibly rewarding dish of grated cocoyam rolled in cocoyam leaves, slow-cooked in a rich broth of palm oil, crayfish, and smoked fish.",
+    shortDescription: "Grated cocoyam wrapped in leaves and stewed with meats.",
+    description: "A revered labor-of-love dish from the Bafaw/Oroko people. It consists of freshly grated taro (cocoyam) carefully tied in tiny cocoyam leaf bundles, and simmered slowly in a rich broth of palm oil, smoked fish, and periwinkles.",
     image: "/Ekwang.jpeg",
     category: "Traditional",
-    mealType: ["Lunch", "Dinner"],
-    dietaryLabels: ["Gluten-Free", "High-Fiber"],
-    suitableFor: ["Special Occasions", "Digestive Health"],
-    ingredients: ["Grated cocoyam", "Cocoyam leaves", "Palm oil", "Periwinkles", "Smoked fish"],
+    mealType: ["Dinner", "Lunch"],
+    dietaryLabels: ["Gluten-Free", "High-Fiber", "High-Calorie"],
+    suitableFor: ["Special Occasions", "Sustained Energy"],
+    ingredients: ["Grated cocoyam", "Cocoyam leaves (or collard greens)", "Palm oil", "Smoked fish", "Periwinkles", "Crayfish"],
     preparationSteps: [
-      "Grate the cocoyam and wrap small amounts in the leaves.",
-      "Arrange the wraps in a pot over a bed of periwinkles.",
-      "Add broth, palm oil, and fish, simmering gently."
+      "Peel, wash, and manually grate the cocoyam.",
+      "Place small amounts of the grated mix onto torn leaves and roll tightly.",
+      "Layer the bottom of a pot with periwinkles or plantain stalks.",
+      "Stack the rolls, add water, smoked fish, and palm oil, then simmer without stirring."
     ],
-    nutrition: { calories: 580, protein: 22, carbs: 60, fat: 28, fiber: 12 }
+    nutrition: { calories: 600, protein: 25, carbs: 65, fat: 28, fiber: 11 }
   },
   {
     id: "ekwang-special",
     name: "Special Ekwang",
-    shortDescription: "A premium variation of the classic Ekwang.",
-    description: "This special variant of Ekwang includes extra assorted meats, fresh periwinkles, and a richer palm oil base for an even more decadent dining experience.",
+    shortDescription: "Grated cocoyam wrapped in leaves and stewed with meats.",
+    description: "A revered labor-of-love dish from the Bafaw/Oroko people. It consists of freshly grated taro (cocoyam) carefully tied in tiny cocoyam leaf bundles, and simmered slowly in a rich broth of palm oil, smoked fish, and periwinkles.",
     image: "/Ekwang2.jpeg",
     category: "Traditional",
-    mealType: ["Lunch", "Dinner"],
-    dietaryLabels: ["Gluten-Free", "High-Protein"],
+    mealType: ["Dinner", "Lunch"],
+    dietaryLabels: ["Gluten-Free", "High-Fiber", "High-Calorie"],
     suitableFor: ["Special Occasions", "Sustained Energy"],
-    ingredients: ["Grated cocoyam", "Leaves", "Assorted meats", "Periwinkles", "Palm oil"],
+    ingredients: ["Grated cocoyam", "Cocoyam leaves (or collard greens)", "Palm oil", "Smoked fish", "Periwinkles", "Crayfish"],
     preparationSteps: [
-      "Prepare as authentic Ekwang, but load the broth heavily with extra proteins.",
-      "Simmer until the cocoyam is tender and has absorbed the rich flavors."
+      "Peel, wash, and manually grate the cocoyam.",
+      "Place small amounts of the grated mix onto torn leaves and roll tightly.",
+      "Layer the bottom of a pot with periwinkles or plantain stalks.",
+      "Stack the rolls, add water, smoked fish, and palm oil, then simmer without stirring."
     ],
-    nutrition: { calories: 650, protein: 30, carbs: 58, fat: 34, fiber: 12 }
+    nutrition: { calories: 600, protein: 25, carbs: 65, fat: 28, fiber: 11 }
   },
   {
     id: "cornchaff-2",
