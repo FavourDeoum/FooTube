@@ -626,7 +626,7 @@ export const dishes: Dish[] = [
   },
   {
     id: "ekwang-authentic",
-    name: "Authentic Ekwang",
+    name: "Ekwang",
     shortDescription: "Grated cocoyam wrapped in leaves and stewed with meats.",
     description: "A revered labor-of-love dish from the Bafaw/Oroko people. It consists of freshly grated taro (cocoyam) carefully tied in tiny cocoyam leaf bundles, and simmered slowly in a rich broth of palm oil, smoked fish, and periwinkles.",
     image: "/Ekwang.jpeg",
