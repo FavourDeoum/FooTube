@@ -78,6 +78,11 @@ export default function DishCard({ dish, animDelay = 0 }: DishCardProps) {
         <div style={styles.categoryBadge}>
           <Badge label={dish.category} variant="green" />
         </div>
+        {dish.isAvailable && (
+          <div style={styles.availabilityBadge}>
+            <Badge label="Available" variant="solid" />
+          </div>
+        )}
       </div>
 
       {/* Body */}
@@ -167,6 +172,12 @@ const styles: Record<string, React.CSSProperties> = {
     position: "absolute",
     top: "12px",
     left: "12px",
+    zIndex: 2,
+  },
+  availabilityBadge: {
+    position: "absolute",
+    top: "12px",
+    right: "12px",
     zIndex: 2,
   },
   body: {

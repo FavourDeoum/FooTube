@@ -2,7 +2,7 @@ import React from "react";
 
 interface BadgeProps {
   label: string;
-  variant?: "green" | "outline" | "cream";
+  variant?: "green" | "outline" | "cream" | "solid";
   size?: "sm" | "md";
 }
 
@@ -33,6 +33,12 @@ export default function Badge({ label, variant = "green", size = "sm" }: BadgePr
       backgroundColor: "var(--cream-100)",
       color: "var(--charcoal-400)",
       border: "1px solid var(--cream-200)",
+    },
+    solid: {
+      backgroundColor: "var(--green-600)",
+      color: "white",
+      border: "1px solid var(--green-600)",
+      fontWeight: 600,
     },
   };
 

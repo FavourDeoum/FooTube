@@ -19,6 +19,7 @@ export interface Dish {
   ingredients: string[];
   preparationSteps: string[];
   nutrition: NutritionInfo;
+  isAvailable?: boolean;
 }
 
 export const dishes: Dish[] = [

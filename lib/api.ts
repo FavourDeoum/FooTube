@@ -7,24 +7,43 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 const delay = (ms = 800) => new Promise((r) => setTimeout(r, ms));
 
+function mapDishFromDB(dbDish: any): Dish {
+  return {
+    id: dbDish.id,
+    name: dbDish.name,
+    shortDescription: dbDish.short_description,
+    description: dbDish.description,
+    image: dbDish.image,
+    category: dbDish.category,
+    mealType: dbDish.meal_type || [],
+    dietaryLabels: dbDish.dietary_labels || [],
+    suitableFor: dbDish.suitable_for || [],
+    ingredients: dbDish.ingredients || [],
+    preparationSteps: dbDish.preparation_steps || [],
+    nutrition: dbDish.nutrition || { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+    isAvailable: dbDish.is_available || false,
+  };
+}
+
 // ── Fetch all dishes ─────────────────────────────────────────
 export async function fetchDishes(): Promise<Dish[]> {
-  if (BACKEND_URL) {
-    const res = await fetch(`${BACKEND_URL}/api/dishes`);
-    if (res.ok) return res.json();
+  const { data, error } = await supabase.from('dishes').select('*');
+  if (error) {
+    console.error('Error fetching dishes from Supabase:', error);
+    return dishes; // fallback to mock data on error
   }
-  await delay();
-  return dishes;
+  if (!data) return [];
+  return data.map(mapDishFromDB);
 }
 
 // ── Fetch a single dish by id ────────────────────────────────
 export async function fetchDishById(id: string): Promise<Dish | null> {
-  if (BACKEND_URL) {
-    const res = await fetch(`${BACKEND_URL}/api/dishes/${id}`);
-    if (res.ok) return res.json();
+  const { data, error } = await supabase.from('dishes').select('*').eq('id', id).single();
+  if (error || !data) {
+    console.error(`Error fetching dish ${id} from Supabase:`, error);
+    return dishes.find((d) => d.id === id) ?? null; // fallback to mock
   }
-  await delay(400);
-  return dishes.find((d) => d.id === id) ?? null;
+  return mapDishFromDB(data);
 }
 
 // ── Quick recommendations ────────────────────────────────────
@@ -36,24 +55,16 @@ export interface QuickRecommendationInput {
 export async function getQuickRecommendations(
   input: QuickRecommendationInput
 ): Promise<Dish[]> {
-  if (BACKEND_URL) {
-    const res = await fetch(`${BACKEND_URL}/api/recommendations/quick`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
-    if (res.ok) return res.json();
-  }
-  await delay();
-  // simple mock filter
-  const filtered = dishes.filter(
+  const allDishes = await fetchDishes();
+  // simple filter
+  const filtered = allDishes.filter(
     (d) =>
       d.mealType.some((m) =>
         m.toLowerCase().includes(input.mealType.toLowerCase())
       ) ||
       d.category.toLowerCase().includes(input.foodCategory.toLowerCase())
   );
-  return filtered.length > 0 ? filtered.slice(0, 4) : dishes.slice(0, 4);
+  return filtered.length > 0 ? filtered.slice(0, 4) : allDishes.slice(0, 4);
 }
 
 // ── Personalized recommendations ─────────────────────────────
@@ -71,22 +82,14 @@ export interface PersonalizedInput {
 export async function getPersonalizedRecommendations(
   input: PersonalizedInput
 ): Promise<Dish[]> {
-  if (BACKEND_URL) {
-    const res = await fetch(`${BACKEND_URL}/api/recommendations/personalized`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
-    if (res.ok) return res.json();
-  }
-  await delay(1200);
+  const allDishes = await fetchDishes();
   // mock: filter by meal category and activity
-  const filtered = dishes.filter((d) =>
+  const filtered = allDishes.filter((d) =>
     d.mealType.some((m) =>
       m.toLowerCase().includes(input.mealCategory.toLowerCase())
     )
   );
-  return filtered.length > 2 ? filtered.slice(0, 4) : dishes.slice(0, 4);
+  return filtered.length > 2 ? filtered.slice(0, 4) : allDishes.slice(0, 4);
 }
 
 // ── Chat ─────────────────────────────────────────────────────

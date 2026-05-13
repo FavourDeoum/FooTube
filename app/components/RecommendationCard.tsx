@@ -30,11 +30,15 @@ export default function RecommendationCard({
           style={{ objectFit: "cover" }}
         />
         <div style={styles.overlay} />
-        {/* Recommended tag */}
         <div style={styles.recTag}>
           <Sparkles size={12} color="#2D6A4F" />
           <span>Recommended</span>
         </div>
+        {dish.isAvailable && (
+          <div style={styles.availTag}>
+            <Badge label="Available" variant="solid" />
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -126,6 +130,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     color: "var(--green-600)",
     border: "1px solid var(--green-100)",
+  },
+  availTag: {
+    position: "absolute",
+    top: "12px",
+    left: "12px",
+    zIndex: 2,
   },
   content: {
     padding: "18px 20px 20px",
