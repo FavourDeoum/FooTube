@@ -13,7 +13,7 @@ export interface Dish {
   description: string;
   image: string;
   category: "Traditional" | "Soup" | "Protein" | "Breakfast" | "Light" | "Snack" | "All";
-  mealType: ("Breakfast" | "Lunch" | "Dinner" | "All")[];
+  mealType: ("Breakfast" | "Lunch" | "Dinner" | "Light" |"All")[];
   dietaryLabels: string[];
   suitableFor: string[];
   ingredients: string[];
@@ -106,7 +106,7 @@ export const dishes: Dish[] = [
     description: "Koki (or Koki corn/beans) is a beautifully vibrant, orange-red steamed pudding. Made from coarsely blended black-eyed peas, generous amounts of warm palm oil, and cocoyam leaves, steamed in banana leaves to trap the earthy flavors.",
     image: "/koki19.jpeg",
     category: "Traditional",
-    mealType: ["Lunch", "Snack"],
+    mealType: ["Lunch"],
     dietaryLabels: ["Vegan", "High-Protein", "Gluten-Free"],
     suitableFor: ["Plant-based Diets", "Muscle Recovery"],
     ingredients: ["Black-eyed peas", "Warm palm oil", "Water", "Salt", "Banana leaves for wrapping"],
@@ -411,7 +411,7 @@ export const dishes: Dish[] = [
     description: "A beloved Cameroonian breakfast and street food! It combines the fluffy, sweet, deep-fried dough balls known as Puff Puff with savory, warmly spiced stewed beans. The contrast of flavors and textures is irresistible.",
     image: "/Puff Puff and Beans_ CAMEROONIAN Food_.jpg",
     category: "Breakfast",
-    mealType: ["Breakfast", "Snack"],
+    mealType: ["Breakfast"],
     dietaryLabels: ["Vegetarian", "High-Calorie"],
     suitableFor: ["Quick Energy", "Comfort Eating"],
     ingredients: ["Flour", "Yeast", "Sugar", "Beans", "Palm oil or vegetable oil", "Onions"],
@@ -449,7 +449,7 @@ export const dishes: Dish[] = [
     description: "A wildly popular West African street food. Thinly sliced beef or chicken is heavily coated in 'yaji'—a complex, spicy peanut spice blend—and grilled over open coals. It's smoky, nutty, and fiery.",
     image: "/dish-suya.png",
     category: "Snack",
-    mealType: ["Snack", "Dinner"],
+    mealType: ["Dinner"],
     dietaryLabels: ["High-Protein", "Low-Carb"],
     suitableFor: ["Quick Snacks", "Muscle Building"],
     ingredients: ["Beef or Chicken", "Suya spice (Yaji: peanuts, ginger, pepper, etc.)", "Vegetable oil", "Onions for garnish"],
@@ -560,7 +560,7 @@ export const dishes: Dish[] = [
     description: "A simple, highly nutritious, and satisfying meal consisting of tender boiled cassava dipped into a savory, creamy, and slightly spicy groundnut (peanut) paste.",
     image: "/Groundnut paste and cassava.jpeg",
     category: "Traditional",
-    mealType: ["Breakfast", "Snack", "Lunch"],
+    mealType: ["Breakfast", "Lunch"],
     dietaryLabels: ["Vegan-Option", "Gluten-Free"],
     suitableFor: ["Energy Boost", "Plant-based Diets"],
     ingredients: ["Cassava tubers", "Roasted groundnuts", "Garlic", "Ginger", "Pepper"],
@@ -688,7 +688,7 @@ export const dishes: Dish[] = [
     description: "A delicious, protein-dense steamed pudding made by blending Egusi (melon seeds) with meats or fish, bound together and steamed in banana leaves. It has a beautiful spongy texture.",
     image: "/Egusi Pudding.jpg",
     category: "Protein",
-    mealType: ["Lunch", "Snack"],
+    mealType: ["Lunch"],
     dietaryLabels: ["High-Protein", "Keto-Friendly"],
     suitableFor: ["Muscle Recovery", "Low Carb Diets"],
     ingredients: ["Ground Egusi", "Meats or fish", "Spices", "Water", "Banana leaves"],
@@ -706,7 +706,7 @@ export const dishes: Dish[] = [
     description: "Spaghetti Omelette is a popular fusion dish combining boiled spaghetti with seasoned beaten eggs. It is pan-fried to form a thick, golden, crispy-edged cake, making it perfect for breakfast or a hearty snack.",
     image: "/Spaghetti Omelette Recipe.jpg",
     category: "Breakfast",
-    mealType: ["Breakfast", "Snack"],
+    mealType: ["Breakfast"],
     dietaryLabels: ["Vegetarian", "High-Carb", "High-Protein"],
     suitableFor: ["Quick Meals", "Energy Boost"],
     ingredients: ["Spaghetti", "Eggs", "Onions", "Tomatoes", "Vegetable oil", "Spices"],
