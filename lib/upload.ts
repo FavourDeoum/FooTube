@@ -29,7 +29,7 @@ async function uploadtest() {
   // --- ADD THIS DEBUG BLOCK ---
   console.log('Testing connection to:', supabaseUrl);
   try {
-    const res = await fetch(supabaseUrl);
+    const res = await fetch(supabaseUrl!);
     console.log('Connection test status:', res.status);
   } catch (e) {
     console.error('Connection test failed. Your computer cannot talk to Supabase:', e);
