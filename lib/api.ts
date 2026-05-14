@@ -1,4 +1,5 @@
 import { dishes, recommendationReasons, type Dish } from "./mockData";
+export type { Dish };
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);

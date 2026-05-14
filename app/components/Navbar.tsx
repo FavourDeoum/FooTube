@@ -62,7 +62,7 @@ export default function Navbar() {
               <Link href="/personalized" style={styles.ctaBtn}>
                 Dashboard
               </Link>
-              <UserButton />
+              <UserButton/>
             </>
           )}
         </div>
