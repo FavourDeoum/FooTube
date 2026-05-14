@@ -20,7 +20,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: { persistSession: false },
-  realtime: { transport: ws }
+  // realtime: { transport: ws }
 });
 
 async function uploadImages() {
