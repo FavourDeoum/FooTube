@@ -19,9 +19,9 @@ export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     persistSession: false, // Prevents the script from hanging
   },
-  realtime: {
-    transport: ws, // This fixes the WebSocket error
-  },
+  // realtime: {
+  //   transport: ws, // This fixes the WebSocket error
+  // },
 });
 
 
