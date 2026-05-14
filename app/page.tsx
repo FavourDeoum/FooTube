@@ -23,7 +23,7 @@ export default function HomePage() {
             </h1>
 
             <p style={styles.heroPara}>
-              Explore authentic Cameroonian dishes, get smart meal recommendations tailored to your health goals, and chat with your personal food AI — all in one place.
+              Explore authentic Cameroonian dishes, get smart meal recommendations tailored to your health goals, and chat with your personal food AI, all in one place.
             </p>
 
             <div className="hero-actions">
@@ -39,7 +39,7 @@ export default function HomePage() {
             {/* Stats */}
             <div style={styles.statsRow}>
               {[
-                { value: "8+", label: "Dishes" },
+                { value: "20+", label: "Dishes" },
                 { value: "3", label: "AI Modes" },
                 { value: "100%", label: "Free" },
               ].map((s) => (
