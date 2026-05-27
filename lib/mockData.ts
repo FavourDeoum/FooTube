@@ -20,6 +20,7 @@ export interface Dish {
   preparationSteps: string[];
   nutrition: NutritionInfo;
   isAvailable?: boolean;
+  recommendationReason?: string;
 }
 
 export const dishes: Dish[] = [

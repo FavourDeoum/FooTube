@@ -63,6 +63,7 @@ export default function HomePage() {
                 width={480}
                 height={420}
                 priority
+                unoptimized={true}
                 style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "24px" }}
               />
               {/* Floating nutrition card */}

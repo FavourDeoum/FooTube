@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Search, SlidersHorizontal, UtensilsCrossed } from "lucide-react";
-import { fetchDishes } from "../../lib/api";
+import { getExploreFeed, logSearch } from "../../lib/api";
 import type { Dish } from "../../lib/mockData";
+import { useAuth } from "@clerk/nextjs";
 import DishCard from "../components/DishCard";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -17,9 +18,25 @@ export default function ExplorePage() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [activeMeal, setActiveMeal] = useState<string>("All");
 
+  const { userId, isLoaded } = useAuth();
+
   useEffect(() => {
-    fetchDishes().then((data) => { setDishes(data); setLoading(false); });
-  }, []);
+    if (!isLoaded) return;
+    getExploreFeed(userId || undefined).then((data) => {
+      setDishes(data);
+      setLoading(false);
+    });
+  }, [userId, isLoaded]);
+
+  // Debounced search logging
+  useEffect(() => {
+    if (!userId || !search.trim()) return;
+    const timeoutId = setTimeout(() => {
+      logSearch(userId, search.trim());
+    }, 1500); // 1.5 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [search, userId]);
 
   const filtered = dishes.filter((d) => {
     const matchSearch =

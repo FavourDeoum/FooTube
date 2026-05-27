@@ -89,7 +89,7 @@ export default function QuickPage() {
                 <RecommendationCard
                   key={dish.id}
                   dish={dish}
-                  reason={recommendationReasons[dish.id]}
+                  reason={dish.recommendationReason || recommendationReasons[dish.id]}
                   animDelay={i * 80}
                 />
               ))}

@@ -72,6 +72,7 @@ export default function DishCard({ dish, animDelay = 0 }: DishCardProps) {
           src={dish.image}
           alt={dish.name}
           fill
+          unoptimized={true}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           style={{ objectFit: "cover" }}
         />

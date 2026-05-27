@@ -1,41 +1,166 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { MessageSquareText, X, Send, ChefHat } from "lucide-react";
-import { sendChatMessage, type ChatMessage } from "../../lib/api";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { MessageSquareText, X, Send, ChefHat, ImagePlus, Trash2, History } from "lucide-react";
+import {
+  sendChatMessage,
+  identifyMealFromImage,
+  getChatSessions,
+  getChatHistory,
+  deleteChatSession,
+  type ChatMessage,
+  type ChatSession,
+} from "../../lib/api";
 import { useAuth } from "@clerk/nextjs";
 
 const GREETING: ChatMessage = {
   role: "assistant",
-  content:
-    "Hi! I'm your FoodAI assistant. Ask me anything about Cameroonian dishes, nutrition, or meal recommendations!",
+  content: "Hi! I'm CamChef 🍲, your Cameroonian food AI. Ask me anything about dishes, nutrition, or meal recommendations, or upload a photo to identify a meal!",
 };
+
+function formatMessage(text: string) {
+  // Replace text emojis with actual emojis
+  let formatted = text
+    .replace(/\*(smiles|smiling|smile face|smiling face|smiles broadly)\*/gi, "😊")
+    .replace(/\*(winks|winking)\*/gi, "😉")
+    .replace(/\*(laughs|laughing|chuckles)\*/gi, "😂")
+    .replace(/\*(nods)\*/gi, "👍")
+    .replace(/\*([^*]+)\*/g, "😊"); // Fallback for other single asterisk roleplay actions if needed, though risky. Wait, I'll just map the common ones. Let's adjust this to just do the specific ones.
+    
+  formatted = text
+    .replace(/\*(smiles|smiling|smile face|smiling face|smiles broadly)\*/gi, "😊")
+    .replace(/\*(winks|winking)\*/gi, "😉")
+    .replace(/\*(laughs|laughing|chuckles)\*/gi, "😂")
+    .replace(/\*(nods)\*/gi, "👍");
+
+  // Handle bold (**text**)
+  const parts = formatted.split(/(\*\*.*?\*\*)/g);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return <strong key={index}>{part.slice(2, -2)}</strong>;
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </>
+  );
+}
 
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<"chat" | "sessions">("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const { isSignedIn, isLoaded } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isSignedIn, isLoaded, userId } = useAuth();
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
+  // Load sessions when opening sessions view
+  const loadSessions = useCallback(async () => {
+    if (!userId) return;
+    setSessionsLoading(true);
+    const data = await getChatSessions(userId);
+    setSessions(data);
+    setSessionsLoading(false);
+  }, [userId]);
+
+  useEffect(() => {
+    if (view === "sessions") loadSessions();
+  }, [view, loadSessions]);
+
   async function handleSend() {
     const text = input.trim();
-    if (!text || loading) return;
+    if ((!text && !imageFile) || loading) return;
+
+    // If there's an image, use identify-meal endpoint
+    if (imageFile) {
+      const userMsg: ChatMessage = {
+        role: "user",
+        content: text ? `🖼️ [Image] ${text}` : "🖼️ What meal is this?",
+      };
+      setMessages((prev) => [...prev, userMsg]);
+      setInput("");
+      setImageFile(null);
+      setImagePreview(null);
+      setLoading(true);
+      try {
+        const { reply } = await identifyMealFromImage(imageFile, text || undefined, userId || undefined, sessionId);
+        setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+      } catch (err: any) {
+        setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I couldn't analyse that image. Please try again." }]);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Regular text chat
     const userMsg: ChatMessage = { role: "user", content: text };
-    setMessages((prev) => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
     try {
-      const reply = await sendChatMessage([...messages, userMsg]);
+      const { reply, sessionId: newSessionId } = await sendChatMessage(
+        updatedMessages,
+        userId!,
+        sessionId
+      );
+      if (newSessionId && !sessionId) setSessionId(newSessionId);
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
-      } finally {
+    } catch (err: any) {
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: "I'm having trouble connecting right now. Please try again shortly.",
+      }]);
+    } finally {
       setLoading(false);
     }
+  }
+
+  async function handleLoadSession(sid: string) {
+    setLoading(true);
+    const history = await getChatHistory(sid);
+    setSessionId(sid);
+    setMessages(history.length > 0 ? history : [GREETING]);
+    setView("chat");
+    setLoading(false);
+  }
+
+  async function handleDeleteSession(e: React.MouseEvent, sid: string) {
+    e.stopPropagation();
+    await deleteChatSession(sid);
+    setSessions((prev) => prev.filter((s) => s.id !== sid));
+    if (sessionId === sid) {
+      setSessionId(null);
+      setMessages([GREETING]);
+    }
+  }
+
+  function handleNewChat() {
+    setSessionId(null);
+    setMessages([GREETING]);
+    setView("chat");
+  }
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   if (!isLoaded || !isSignedIn) return null;
@@ -46,7 +171,7 @@ export default function ChatbotWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         style={styles.fab}
-        aria-label={open ? "Close chat" : "Open FoodAI chat"}
+        aria-label={open ? "Close chat" : "Open CamChef AI chat"}
         id="chatbot-fab"
       >
         {open ? <X size={22} color="#fff" /> : <MessageSquareText size={22} color="#fff" />}
@@ -60,85 +185,172 @@ export default function ChatbotWidget() {
             <div style={styles.drawerAvatar}>
               <ChefHat size={18} color="var(--green-500)" />
             </div>
-            <div>
-              <div style={styles.drawerTitle}>FoodAI Assistant</div>
+            <div style={{ flex: 1 }}>
+              <div style={styles.drawerTitle}>CamChef AI</div>
               <div style={styles.drawerSub}>
                 <span style={styles.onlineDot} /> Online
               </div>
             </div>
-            <button onClick={() => setOpen(false)} style={styles.closeBtn} aria-label="Close">
-              <X size={18} />
+            <button
+              onClick={() => setView(view === "sessions" ? "chat" : "sessions")}
+              style={styles.iconBtn}
+              title="Chat history"
+              aria-label="Chat history"
+            >
+              <History size={16} />
+            </button>
+            <button
+              onClick={handleNewChat}
+              style={{ ...styles.iconBtn, marginLeft: "4px" }}
+              title="New chat"
+              aria-label="New chat"
+            >
+              <MessageSquareText size={16} />
+            </button>
+            <button onClick={() => setOpen(false)} style={{ ...styles.iconBtn, marginLeft: "4px" }} aria-label="Close">
+              <X size={16} />
             </button>
           </div>
 
-          {/* Messages */}
-          <div style={styles.messagesArea} id="chat-messages">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                style={{
-                  ...styles.msgWrap,
-                  justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-                }}
-              >
-                {msg.role === "assistant" && (
-                  <div style={styles.aiBubbleAvatar}>
-                    <ChefHat size={13} color="var(--green-500)" />
+          {/* Sessions panel */}
+          {view === "sessions" ? (
+            <div style={styles.sessionsPanel}>
+              <p style={styles.sessionsPanelTitle}>Previous Conversations</p>
+              {sessionsLoading ? (
+                <div style={styles.sessionsEmpty}>Loading…</div>
+              ) : sessions.length === 0 ? (
+                <div style={styles.sessionsEmpty}>No previous chats yet.</div>
+              ) : (
+                sessions.map((s) => (
+                  <div
+                    key={s.id}
+                    style={styles.sessionRow}
+                    onClick={() => handleLoadSession(s.id)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div style={styles.sessionInfo}>
+                      <div style={styles.sessionLabel}>Chat session</div>
+                      <div style={styles.sessionDate}>
+                        {new Date(s.updated_at).toLocaleDateString(undefined, {
+                          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+                        })}
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => handleDeleteSession(e, s.id)}
+                      style={styles.deleteSessionBtn}
+                      title="Delete session"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Messages */}
+              <div style={styles.messagesArea} id="chat-messages">
+                {messages.map((msg, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      ...styles.msgWrap,
+                      justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                    }}
+                  >
+                    {msg.role === "assistant" && (
+                      <div style={styles.aiBubbleAvatar}>
+                        <ChefHat size={13} color="var(--green-500)" />
+                      </div>
+                    )}
+                    <div style={msg.role === "user" ? styles.userBubble : styles.aiBubble}>
+                      {formatMessage(msg.content)}
+                    </div>
+                  </div>
+                ))}
+
+                {loading && (
+                  <div style={{ ...styles.msgWrap, justifyContent: "flex-start" }}>
+                    <div style={styles.aiBubbleAvatar}>
+                      <ChefHat size={13} color="var(--green-500)" />
+                    </div>
+                    <div style={styles.typingBubble}>
+                      <span style={{ ...styles.typingDot, animationDelay: "0ms" }} />
+                      <span style={{ ...styles.typingDot, animationDelay: "160ms" }} />
+                      <span style={{ ...styles.typingDot, animationDelay: "320ms" }} />
+                    </div>
                   </div>
                 )}
-                <div
-                  style={
-                    msg.role === "user"
-                      ? styles.userBubble
-                      : styles.aiBubble
-                  }
+                <div ref={bottomRef} />
+              </div>
+
+              {/* Image preview strip */}
+              {imagePreview && (
+                <div style={styles.imagePreviewBar}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imagePreview} alt="Preview" style={styles.imageThumb} />
+                  <span style={styles.imagePreviewName}>{imageFile?.name}</span>
+                  <button
+                    onClick={() => { setImageFile(null); setImagePreview(null); }}
+                    style={styles.removeImageBtn}
+                    aria-label="Remove image"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
+              {/* Input */}
+              <div style={styles.inputArea}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  style={{ display: "none" }}
+                  onChange={handleImageSelect}
+                  id="chatbot-image-input"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  style={styles.imageBtn}
+                  title="Upload meal photo"
+                  aria-label="Upload meal photo"
+                  disabled={loading}
                 >
-                  {msg.content}
-                </div>
+                  <ImagePlus size={18} color="var(--green-500)" />
+                </button>
+                <textarea
+                  id="chat-input"
+                  style={{ ...styles.input, resize: "none", minHeight: "40px", maxHeight: "120px", padding: "10px 14px", lineHeight: "1.2" }}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      if (input.trim() || imageFile) handleSend();
+                    }
+                  }}
+                  placeholder={imageFile ? "Ask about this image…" : "Ask about any dish…"}
+                  disabled={loading}
+                  rows={input.split("\n").length > 1 ? Math.min(input.split("\n").length, 4) : 1}
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={(!input.trim() && !imageFile) || loading}
+                  style={{
+                    ...styles.sendBtn,
+                    opacity: (!input.trim() && !imageFile) || loading ? 0.5 : 1,
+                  }}
+                  id="chat-send-btn"
+                  aria-label="Send message"
+                >
+                  <Send size={16} color="#fff" />
+                </button>
               </div>
-            ))}
-
-            {/* Typing indicator */}
-            {loading && (
-              <div style={{ ...styles.msgWrap, justifyContent: "flex-start" }}>
-                <div style={styles.aiBubbleAvatar}>
-                  <ChefHat size={13} color="var(--green-500)" />
-                </div>
-                <div style={styles.typingBubble}>
-                  <span style={{ ...styles.typingDot, animationDelay: "0ms" }} />
-                  <span style={{ ...styles.typingDot, animationDelay: "160ms" }} />
-                  <span style={{ ...styles.typingDot, animationDelay: "320ms" }} />
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
-
-          {/* Input */}
-          <div style={styles.inputArea}>
-            <input
-              id="chat-input"
-              style={styles.input}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask about any dish…"
-              disabled={loading}
-              autoComplete="off"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() || loading}
-              style={{
-                ...styles.sendBtn,
-                opacity: !input.trim() || loading ? 0.5 : 1,
-              }}
-              id="chat-send-btn"
-              aria-label="Send message"
-            >
-              <Send size={16} color="#fff" />
-            </button>
-          </div>
+            </>
+          )}
         </div>
       )}
     </>
@@ -170,7 +382,7 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 199,
     width: "360px",
     maxWidth: "calc(100vw - 40px)",
-    height: "480px",
+    height: "520px",
     maxHeight: "calc(100dvh - 120px)",
     backgroundColor: "var(--surface)",
     border: "1px solid var(--border)",
@@ -183,15 +395,15 @@ const styles: Record<string, React.CSSProperties> = {
   drawerHeader: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
-    padding: "16px 18px",
+    gap: "10px",
+    padding: "14px 16px",
     borderBottom: "1px solid var(--border)",
     backgroundColor: "var(--cream)",
     flexShrink: 0,
   },
   drawerAvatar: {
-    width: "38px",
-    height: "38px",
+    width: "36px",
+    height: "36px",
     borderRadius: "50%",
     backgroundColor: "var(--green-50)",
     border: "1px solid var(--green-100)",
@@ -219,18 +431,77 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: "#34C759",
     display: "inline-block",
   },
-  closeBtn: {
-    marginLeft: "auto",
+  iconBtn: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "32px",
-    height: "32px",
+    width: "30px",
+    height: "30px",
     borderRadius: "8px",
     border: "1px solid var(--border)",
     background: "transparent",
     cursor: "pointer",
     color: "var(--text-secondary)",
+    flexShrink: 0,
+  },
+  sessionsPanel: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  sessionsPanelTitle: {
+    fontSize: "0.78rem",
+    fontWeight: 700,
+    color: "var(--text-secondary)",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+    marginBottom: "8px",
+  },
+  sessionsEmpty: {
+    textAlign: "center",
+    color: "var(--text-secondary)",
+    fontSize: "0.875rem",
+    padding: "24px 0",
+  },
+  sessionRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "12px 14px",
+    borderRadius: "10px",
+    border: "1px solid var(--border)",
+    cursor: "pointer",
+    backgroundColor: "var(--cream)",
+    transition: "background var(--transition)",
+  },
+  sessionInfo: {
+    flex: 1,
+  },
+  sessionLabel: {
+    fontSize: "0.875rem",
+    fontWeight: 600,
+    color: "var(--charcoal)",
+  },
+  sessionDate: {
+    fontSize: "0.75rem",
+    color: "var(--text-secondary)",
+    marginTop: "2px",
+  },
+  deleteSessionBtn: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "28px",
+    height: "28px",
+    border: "none",
+    borderRadius: "8px",
+    background: "transparent",
+    color: "var(--text-secondary)",
+    cursor: "pointer",
+    flexShrink: 0,
   },
   messagesArea: {
     flex: 1,
@@ -265,6 +536,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "0.85rem",
     lineHeight: 1.55,
     color: "var(--charcoal)",
+    whiteSpace: "pre-wrap",
   },
   userBubble: {
     maxWidth: "80%",
@@ -292,18 +564,69 @@ const styles: Record<string, React.CSSProperties> = {
     display: "inline-block",
     animation: "typing-dot 1.2s ease-in-out infinite",
   },
+  imagePreviewBar: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "8px 14px",
+    borderTop: "1px solid var(--border)",
+    backgroundColor: "var(--green-50)",
+    flexShrink: 0,
+  },
+  imageThumb: {
+    width: "40px",
+    height: "40px",
+    objectFit: "cover",
+    borderRadius: "8px",
+    border: "1px solid var(--border)",
+    flexShrink: 0,
+  },
+  imagePreviewName: {
+    flex: 1,
+    fontSize: "0.78rem",
+    color: "var(--charcoal)",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  removeImageBtn: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+    border: "none",
+    background: "transparent",
+    cursor: "pointer",
+    color: "var(--text-secondary)",
+    flexShrink: 0,
+  },
   inputArea: {
     display: "flex",
-    gap: "10px",
+    gap: "8px",
     padding: "12px 14px",
     borderTop: "1px solid var(--border)",
     backgroundColor: "var(--cream)",
     flexShrink: 0,
+    alignItems: "flex-end",
+  },
+  imageBtn: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "36px",
+    height: "36px",
+    border: "1px solid var(--border)",
+    borderRadius: "50%",
+    background: "var(--surface)",
+    cursor: "pointer",
+    flexShrink: 0,
+    transition: "background var(--transition)",
   },
   input: {
     flex: 1,
     padding: "10px 14px",
-    borderRadius: "var(--radius-full)",
+    borderRadius: "16px",
     border: "1px solid var(--border)",
     backgroundColor: "var(--surface)",
     fontSize: "0.875rem",

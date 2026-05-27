@@ -26,6 +26,7 @@ export default function RecommendationCard({
           src={dish.image}
           alt={dish.name}
           fill
+          unoptimized={true}
           sizes="(max-width: 640px) 100vw, 50vw"
           style={{ objectFit: "cover" }}
         />

@@ -4,9 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
-
-const delay = (ms = 800) => new Promise((r) => setTimeout(r, ms));
+export const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://food-ai-backend-68mt.onrender.com";
 
 function mapDishFromDB(dbDish: any): Dish {
   return {
@@ -23,6 +21,7 @@ function mapDishFromDB(dbDish: any): Dish {
     preparationSteps: dbDish.preparation_steps || [],
     nutrition: dbDish.nutrition || { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     isAvailable: dbDish.is_available || false,
+    recommendationReason: dbDish.recommendation_reason || "",
   };
 }
 
@@ -31,7 +30,7 @@ export async function fetchDishes(): Promise<Dish[]> {
   const { data, error } = await supabase.from('dishes').select('*');
   if (error) {
     console.error('Error fetching dishes from Supabase:', error);
-    return dishes; // fallback to mock data on error
+    return dishes;
   }
   if (!data) return [];
   return data.map(mapDishFromDB);
@@ -42,7 +41,7 @@ export async function fetchDishById(id: string): Promise<Dish | null> {
   const { data, error } = await supabase.from('dishes').select('*').eq('id', id).single();
   if (error || !data) {
     console.error(`Error fetching dish ${id} from Supabase:`, error);
-    return dishes.find((d) => d.id === id) ?? null; // fallback to mock
+    return dishes.find((d) => d.id === id) ?? null;
   }
   return mapDishFromDB(data);
 }
@@ -57,7 +56,6 @@ export async function getQuickRecommendations(
   input: QuickRecommendationInput
 ): Promise<Dish[]> {
   const allDishes = await fetchDishes();
-  // simple filter
   const filtered = allDishes.filter(
     (d) =>
       d.mealType.some((m) =>
@@ -68,7 +66,30 @@ export async function getQuickRecommendations(
   return filtered.length > 0 ? filtered.slice(0, 4) : allDishes.slice(0, 4);
 }
 
-// ── Personalized recommendations ─────────────────────────────
+// ── Personalized recommendations via backend feed ─────────────
+
+export async function getExploreFeed(userId?: string): Promise<Dish[]> {
+  if (userId) {
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}`,
+        { method: "GET" }
+      );
+      if (res.ok) {
+        const json = await res.json();
+        if (json.status === "success" && Array.isArray(json.data) && json.data.length > 0) {
+          return json.data.map((d: any) =>
+            d.short_description !== undefined ? mapDishFromDB(d) : (d as Dish)
+          );
+        }
+      }
+    } catch (err) {
+      console.warn("Backend explore feed unavailable, falling back:", err);
+    }
+  }
+  return fetchDishes(); // Fallback
+}
+
 export interface PersonalizedInput {
   name: string;
   age: number;
@@ -81,90 +102,173 @@ export interface PersonalizedInput {
 }
 
 export async function getPersonalizedRecommendations(
-  input: PersonalizedInput
+  input: PersonalizedInput,
+  userId?: string
 ): Promise<Dish[]> {
+  // Try AI-powered backend first if userId is available
+  if (userId) {
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}`,
+        { method: "GET" }
+      );
+      if (res.ok) {
+        const json = await res.json();
+        if (json.status === "success" && Array.isArray(json.data) && json.data.length > 0) {
+          const mapped = json.data.map((d: any) =>
+            d.short_description !== undefined ? mapDishFromDB(d) : (d as Dish)
+          );
+          // Filter by meal category
+          const filtered = mapped.filter((d: Dish) =>
+            d.mealType.some((m) =>
+              m.toLowerCase().includes(input.mealCategory.toLowerCase())
+            )
+          );
+          return filtered.length > 0 ? filtered.slice(0, 4) : mapped.slice(0, 4);
+        }
+      }
+    } catch (err) {
+      console.warn("Backend feed unavailable, falling back:", err);
+    }
+  }
+
+  // Fallback: filter from Supabase
   const allDishes = await fetchDishes();
-  // mock: filter by meal category and activity
   const filtered = allDishes.filter((d) =>
     d.mealType.some((m) =>
       m.toLowerCase().includes(input.mealCategory.toLowerCase())
     )
   );
-  return filtered.length > 2 ? filtered.slice(0, 4) : allDishes.slice(0, 4);
+  return filtered.length > 2 ? filtered.slice(0, 6) : allDishes.slice(0, 6);
 }
 
-// ── Chat ─────────────────────────────────────────────────────
+// ── Chat message types ────────────────────────────────────────
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
 
-const chatReplies = [
-  "That's a great question! Jollof rice is an excellent source of complex carbohydrates and pairs well with grilled chicken for a balanced meal.",
-  "For someone with diabetes, I'd recommend pepper soup or grilled suya — both are low in carbohydrates and high in protein.",
-  "Egusi soup is incredibly rich in protein and healthy fats. It's one of the most nutritious traditional soups!",
-  "Moi Moi is an underrated superfood — packed with plant-based protein and fiber, it's perfect for vegetarians.",
-  "I'd be happy to suggest meals based on your preferences! Could you tell me a bit about your dietary goals?",
-  "Akara is a fantastic breakfast option — it's high in protein and fiber, keeping you full through the morning.",
-];
-
+// ── Send chat message to real AI backend ─────────────────────
 export async function sendChatMessage(
-  messages: ChatMessage[]
-): Promise<string> {
-  if (BACKEND_URL) {
-    const res = await fetch(`${BACKEND_URL}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      return data.reply ?? data.message ?? "I'm here to help!";
-    }
+  messages: ChatMessage[],
+  userId: string,
+  sessionId?: string | null
+): Promise<{ reply: string; sessionId: string }> {
+  const lastMsg = messages[messages.length - 1];
+  const userMessage = lastMsg?.role === "user" ? lastMsg.content : "";
+
+  const res = await fetch(`${BACKEND_URL}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: userId,
+      session_id: sessionId || undefined,
+      message: userMessage,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Backend chat error ${res.status}: ${err}`);
   }
-  await delay(1200);
-  return chatReplies[Math.floor(Math.random() * chatReplies.length)];
+
+  const data = await res.json();
+  return {
+    reply: data.reply ?? "I'm here to help!",
+    sessionId: data.session_id ?? sessionId ?? "",
+  };
 }
 
-// ── Sentiment / Reviews ──────────────────────────────────────
-export interface SentimentInput {
-  userId: string;
-  dishId: string;
-  sentiment: "like" | "unlike";
+// ── Identify a meal from an uploaded image ────────────────────
+export async function identifyMealFromImage(
+  imageFile: File,
+  question?: string,
+  userId?: string,
+  sessionId?: string | null
+): Promise<{ reply: string }> {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+  if (question) formData.append("question", question);
+  if (userId) formData.append("user_id", userId);
+  if (sessionId) formData.append("session_id", sessionId);
+
+  const res = await fetch(`${BACKEND_URL}/api/identify-meal`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Identify meal error ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+  return { reply: data.reply ?? "Could not identify the meal." };
 }
 
-// export async function saveDishSentiment(input: SentimentInput): Promise<void> {
-//   if (BACKEND_URL) {
-//     const res = await fetch(`${BACKEND_URL}/api/sentiments`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(input),
-//     });
-//     if (res.ok) return;
-//   }
-//   await delay(400);
-//   // Mock: sentiment is saved locally in frontend state
-// }
+// ── Chat session management ───────────────────────────────────
+export interface ChatSession {
+  id: string;
+  created_at: string;
+  updated_at: string;
+}
 
+export async function getChatSessions(userId: string): Promise<ChatSession[]> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/chat/sessions/${encodeURIComponent(userId)}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.sessions ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getChatHistory(sessionId: string): Promise<ChatMessage[]> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/chat/history/${encodeURIComponent(sessionId)}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.messages ?? []).map((m: any) => ({ role: m.role as "user" | "assistant", content: m.content }));
+  } catch {
+    return [];
+  }
+}
+
+export async function deleteChatSession(sessionId: string): Promise<void> {
+  try {
+    await fetch(`${BACKEND_URL}/api/chat/sessions/${encodeURIComponent(sessionId)}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    console.error("Delete session error:", err);
+  }
+}
+
+// ── Log a search query ────────────────────────────────────────
+export async function logSearch(userId: string, query: string): Promise<void> {
+  try {
+    await fetch(`${BACKEND_URL}/api/search-log?user_id=${encodeURIComponent(userId)}&query=${encodeURIComponent(query)}`, {
+      method: "POST",
+    });
+  } catch { /* best-effort */ }
+}
+
+// ── Sentiment / Reviews (Supabase direct) ────────────────────
 export { recommendationReasons };
 
-
-
-
 export async function fetchUserSentiment(userId: string, dishId: string) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('dish_sentiments')
     .select('sentiment')
     .eq('user_id', userId)
     .eq('dish_id', dishId)
     .single();
-  
   return data ? data.sentiment : null;
 }
 
 export async function saveDishSentiment({ userId, dishId, sentiment }: { userId: string, dishId: string, sentiment: string | null }) {
   if (sentiment === null) {
-    // If toggled off, delete the record
     await supabase
       .from('dish_sentiments')
       .delete()
@@ -172,16 +276,15 @@ export async function saveDishSentiment({ userId, dishId, sentiment }: { userId:
       .eq('dish_id', dishId);
     return;
   }
-
-  // Upsert the sentiment
   const { error } = await supabase
     .from('dish_sentiments')
-    .upsert({ 
-      user_id: userId, 
-      dish_id: dishId, 
+    .upsert({
+      user_id: userId,
+      dish_id: dishId,
       sentiment: sentiment,
-      updated_at: new Date().toISOString() 
+      updated_at: new Date().toISOString()
     }, { onConflict: 'user_id,dish_id' });
-
   if (error) throw error;
 }
+
+// End of file

@@ -150,7 +150,7 @@ export default function PersonalizedPage() {
             mealCategory: autoMeal,
           };
           
-          const recs = await getPersonalizedRecommendations(input);
+          const recs = await getPersonalizedRecommendations(input, user?.id);
           setResults(recs);
           setMode("dashboard");
         } else {
@@ -222,7 +222,7 @@ export default function PersonalizedPage() {
         foodAllergies,
         activityLevel,
         mealCategory
-      } as any);
+      } as any, user?.id);
 
       setResults(recs);
       setTimeOfDayMeal(mealCategory);
@@ -293,7 +293,7 @@ export default function PersonalizedPage() {
           </div>
           <div style={styles.resultsGrid}>
             {results.map((dish, i) => (
-              <RecommendationCard key={dish.id} dish={dish} reason={recommendationReasons[dish.id]} animDelay={i * 80} />
+              <RecommendationCard key={dish.id} dish={dish} reason={dish.recommendationReason || recommendationReasons[dish.id]} animDelay={i * 80} />
             ))}
           </div>
         </div>

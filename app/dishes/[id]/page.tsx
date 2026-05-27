@@ -43,6 +43,7 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
             alt={dish.name}
             fill
             priority
+            unoptimized={true}
             style={{ objectFit: "cover" }}
             sizes="(max-width: 768px) 100vw, 50vw"
           />
@@ -149,7 +150,7 @@ export default async function DishDetailPage({ params }: { params: Promise<{ id:
               <ul style={styles.ingredientList}>
                 <li style={styles.ingredientItem}>
                   <span style={styles.bullet} />
-                  {recommendationReasons[dish.id] || "A highly nutritious and culturally rich meal."}
+                  {dish.recommendationReason || recommendationReasons[dish.id] || "A highly nutritious and culturally rich meal."}
                 </li>
                 {dish.dietaryLabels.map(label => (
                   <li key={label} style={styles.ingredientItem}>
