@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-import ws from 'ws';
+// import WebSocket from "ws";
 
 dotenv.config({ path: '.env.local' });
 
@@ -9,7 +9,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: { persistSession: false },
-  realtime: { transport: ws }
+  realtime: { transport: WebSocket}
 });
 
 async function test() {

@@ -6,6 +6,18 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 export const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://food-ai-backend-68mt.onrender.com";
 
+// Fetch with a timeout so sleeping Render instances fail fast and we can fall back
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 function mapDishFromDB(dbDish: any): Dish {
   return {
     id: dbDish.id,
@@ -71,7 +83,7 @@ export async function getQuickRecommendations(
 export async function getExploreFeed(userId?: string): Promise<Dish[]> {
   if (userId) {
     try {
-      const res = await fetch(
+      const res = await fetchWithTimeout(
         `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}`,
         { method: "GET" }
       );
@@ -84,7 +96,7 @@ export async function getExploreFeed(userId?: string): Promise<Dish[]> {
         }
       }
     } catch (err) {
-      console.warn("Backend explore feed unavailable, falling back:", err);
+      console.warn("Backend explore feed unavailable, falling back to Supabase:", err);
     }
   }
   return fetchDishes(); // Fallback
@@ -108,7 +120,7 @@ export async function getPersonalizedRecommendations(
   // Try AI-powered backend first if userId is available
   if (userId) {
     try {
-      const res = await fetch(
+      const res = await fetchWithTimeout(
         `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}`,
         { method: "GET" }
       );
@@ -128,18 +140,23 @@ export async function getPersonalizedRecommendations(
         }
       }
     } catch (err) {
-      console.warn("Backend feed unavailable, falling back:", err);
+      console.warn("Backend feed unavailable, falling back to Supabase:", err);
     }
   }
 
   // Fallback: filter from Supabase
-  const allDishes = await fetchDishes();
-  const filtered = allDishes.filter((d) =>
-    d.mealType.some((m) =>
-      m.toLowerCase().includes(input.mealCategory.toLowerCase())
-    )
-  );
-  return filtered.length > 2 ? filtered.slice(0, 6) : allDishes.slice(0, 6);
+  try {
+    const allDishes = await fetchDishes();
+    const filtered = allDishes.filter((d) =>
+      d.mealType.some((m) =>
+        m.toLowerCase().includes(input.mealCategory.toLowerCase())
+      )
+    );
+    return filtered.length > 2 ? filtered.slice(0, 6) : allDishes.slice(0, 6);
+  } catch (err) {
+    console.warn("Supabase fallback also failed:", err);
+    return [];
+  }
 }
 
 // ── Chat message types ────────────────────────────────────────
