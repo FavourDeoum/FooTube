@@ -22,6 +22,8 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editingDishId, setEditingDishId] = useState<string | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState<string>("");
+  const [customDietaryLabel, setCustomDietaryLabel] = useState("");
+  const [customSuitableFor, setCustomSuitableFor] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -137,7 +139,26 @@ export default function AdminDashboard() {
     });
   };
 
+  const handleAddCustomTag = (
+    field: "dietaryLabels" | "suitableFor",
+    value: string,
+    setter: (v: string) => void
+  ) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setFormData((prev) => {
+      if ((prev[field] as string[]).includes(trimmed)) return prev;
+      return { ...prev, [field]: [...(prev[field] as string[]), trimmed] };
+    });
+    setter("");
+  };
+
+  const handleRemoveTag = (field: "dietaryLabels" | "suitableFor", value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: (prev[field] as string[]).filter((v) => v !== value) }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
+
     e.preventDefault();
     setUploading(true);
     setStatus(null);
@@ -791,25 +812,72 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="span-2" style={{ display: "flex", flexDirection: "column", gap: "24px", backgroundColor: "#f9fafb", padding: "24px", borderRadius: "16px", border: "1px solid #e5e7eb" }}>
+                    {/* ── Dietary Benefits ── */}
                     <div>
                       <label style={labelStyle}>Dietary Benefits (Tags)</label>
-                      <div className="checkbox-group">
+                      <div className="checkbox-group" style={{ marginBottom: "12px" }}>
                         {["Gluten-Free", "Vegan", "High-Protein", "Low-Carb", "High-Fiber", "Dairy-Free", "Rich in Iron", "Keto-Friendly"].map((t) => (
                           <label key={t} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.95rem", color: "#374151", cursor: "pointer", fontWeight: 500 }}>
                             <input type="checkbox" checked={formData.dietaryLabels.includes(t)} onChange={() => handleCheckboxChange("dietaryLabels", t)} /> {t}
                           </label>
                         ))}
                       </div>
+                      {/* Custom manual input */}
+                      <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                        <input
+                          value={customDietaryLabel}
+                          onChange={(e) => setCustomDietaryLabel(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddCustomTag("dietaryLabels", customDietaryLabel, setCustomDietaryLabel); } }}
+                          style={{ ...inputStyle, flex: 1 }}
+                          placeholder="Type a custom tag and press Enter or click Add…"
+                        />
+                        <button type="button" onClick={() => handleAddCustomTag("dietaryLabels", customDietaryLabel, setCustomDietaryLabel)} style={{ padding: "0 20px", borderRadius: "12px", border: "none", backgroundColor: "#111827", color: "white", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontSize: "0.85rem" }}>Add</button>
+                      </div>
+                      {/* Active tags strip */}
+                      {formData.dietaryLabels.length > 0 && (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px" }}>
+                          {formData.dietaryLabels.map((tag) => (
+                            <span key={tag} style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#ecfdf5", color: "#065f46", border: "1px solid #a7f3d0", borderRadius: "8px", padding: "4px 10px", fontSize: "0.82rem", fontWeight: 600 }}>
+                              {tag}
+                              <button type="button" onClick={() => handleRemoveTag("dietaryLabels", tag)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#065f46", lineHeight: 1 }}>✕</button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
+
+                    {/* ── Suitable For ── */}
                     <div>
                       <label style={labelStyle}>Suitable For</label>
-                      <div className="checkbox-group">
+                      <div className="checkbox-group" style={{ marginBottom: "12px" }}>
                         {["Weight Loss", "Weight Gain", "Muscle Building", "Heart Health", "Digestive Health", "Blood Sugar Control", "Energy Boost", "Anemia Prevention"].map((t) => (
                           <label key={t} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.95rem", color: "#374151", cursor: "pointer", fontWeight: 500 }}>
                             <input type="checkbox" checked={formData.suitableFor.includes(t)} onChange={() => handleCheckboxChange("suitableFor", t)} /> {t}
                           </label>
                         ))}
                       </div>
+                      {/* Custom manual input */}
+                      <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                        <input
+                          value={customSuitableFor}
+                          onChange={(e) => setCustomSuitableFor(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddCustomTag("suitableFor", customSuitableFor, setCustomSuitableFor); } }}
+                          style={{ ...inputStyle, flex: 1 }}
+                          placeholder="Type a custom suitability and press Enter or click Add…"
+                        />
+                        <button type="button" onClick={() => handleAddCustomTag("suitableFor", customSuitableFor, setCustomSuitableFor)} style={{ padding: "0 20px", borderRadius: "12px", border: "none", backgroundColor: "#111827", color: "white", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontSize: "0.85rem" }}>Add</button>
+                      </div>
+                      {/* Active tags strip */}
+                      {formData.suitableFor.length > 0 && (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px" }}>
+                          {formData.suitableFor.map((tag) => (
+                            <span key={tag} style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#f0f9ff", color: "#0369a1", border: "1px solid #bae6fd", borderRadius: "8px", padding: "4px 10px", fontSize: "0.82rem", fontWeight: 600 }}>
+                              {tag}
+                              <button type="button" onClick={() => handleRemoveTag("suitableFor", tag)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#0369a1", lineHeight: 1 }}>✕</button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
