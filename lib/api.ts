@@ -4,12 +4,31 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
-export const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://food-ai-backend-68mt.onrender.com";
+// ──────────────────────────────────────────────────────────────────
+// Backend URL selection: local development or production
+// ──────────────────────────────────────────────────────────────────
+const DEFAULT_BACKEND_URL = "https://food-ai-backend-68mt.onrender.com";
+const LOCAL_BACKEND_URL = "http://127.0.0.1:8000";
+
+// Determine if we're in local development mode
+const isLocalDev = typeof window !== "undefined" && 
+  (window.location.hostname === "localhost" || 
+   window.location.hostname === "127.0.0.1" ||
+   window.location.hostname === "127.0.0.1:3000");
+
+export const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 
+  (isLocalDev ? LOCAL_BACKEND_URL : DEFAULT_BACKEND_URL);
+
+// Flag to disable fallback to mock/Supabase when using local backend
+export const USE_LOCAL_BACKEND_ONLY = isLocalDev;
 
 // Fetch with a timeout so sleeping Render instances fail fast and we can fall back
-async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 15000): Promise<Response> {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeoutMs);
+  const id = setTimeout(() => {
+    console.warn(`⏱️ Request timeout after ${timeoutMs}ms to ${url}`);
+    controller.abort();
+  }, timeoutMs);
   try {
     const res = await fetch(url, { ...options, signal: controller.signal });
     return res;
@@ -96,10 +115,14 @@ export async function getExploreFeed(userId?: string): Promise<Dish[]> {
         }
       }
     } catch (err) {
-      console.warn("Backend explore feed unavailable, falling back to Supabase:", err);
+      if (USE_LOCAL_BACKEND_ONLY) {
+        console.error("❌ Local backend unavailable at", BACKEND_URL, ":", err);
+        throw new Error(`Cannot reach local backend at ${BACKEND_URL}. Is it running?`);
+      }
+      console.warn("⚠️ Backend explore feed unavailable, falling back to Supabase:", err);
     }
   }
-  return fetchDishes(); // Fallback
+  return fetchDishes(); // Fallback only if NOT local dev
 }
 
 export interface PersonalizedInput {
@@ -140,11 +163,19 @@ export async function getPersonalizedRecommendations(
         }
       }
     } catch (err) {
-      console.warn("Backend feed unavailable, falling back to Supabase:", err);
+      if (USE_LOCAL_BACKEND_ONLY) {
+        console.error("❌ Local backend unavailable at", BACKEND_URL, ":", err);
+        throw new Error(`Cannot reach local backend at ${BACKEND_URL}. Is it running?`);
+      }
+      console.warn("⚠️ Backend feed unavailable, falling back to Supabase:", err);
     }
   }
 
-  // Fallback: filter from Supabase
+  // Fallback: filter from Supabase (only if NOT local dev)
+  if (USE_LOCAL_BACKEND_ONLY) {
+    throw new Error(`Local backend required but unavailable at ${BACKEND_URL}`);
+  }
+
   try {
     const allDishes = await fetchDishes();
     const filtered = allDishes.filter((d) =>
@@ -174,26 +205,34 @@ export async function sendChatMessage(
   const lastMsg = messages[messages.length - 1];
   const userMessage = lastMsg?.role === "user" ? lastMsg.content : "";
 
-  const res = await fetch(`${BACKEND_URL}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      user_id: userId,
-      session_id: sessionId || undefined,
-      message: userMessage,
-    }),
-  });
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userId,
+        session_id: sessionId || undefined,
+        message: userMessage,
+      }),
+    });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Backend chat error ${res.status}: ${err}`);
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Backend chat error ${res.status}: ${err}`);
+    }
+
+    const data = await res.json();
+    return {
+      reply: data.reply ?? "I'm here to help!",
+      sessionId: data.session_id ?? sessionId ?? "",
+    };
+  } catch (err) {
+    if (USE_LOCAL_BACKEND_ONLY) {
+      console.error("❌ Local backend unavailable at", BACKEND_URL, ":", err);
+      throw new Error(`Cannot reach local backend at ${BACKEND_URL}. Is it running?`);
+    }
+    throw err;
   }
-
-  const data = await res.json();
-  return {
-    reply: data.reply ?? "I'm here to help!",
-    sessionId: data.session_id ?? sessionId ?? "",
-  };
 }
 
 // ── Identify a meal from an uploaded image ────────────────────
@@ -209,18 +248,26 @@ export async function identifyMealFromImage(
   if (userId) formData.append("user_id", userId);
   if (sessionId) formData.append("session_id", sessionId);
 
-  const res = await fetch(`${BACKEND_URL}/api/identify-meal`, {
-    method: "POST",
-    body: formData,
-  });
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/identify-meal`, {
+      method: "POST",
+      body: formData,
+    });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Identify meal error ${res.status}: ${err}`);
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Identify meal error ${res.status}: ${err}`);
+    }
+
+    const data = await res.json();
+    return { reply: data.reply ?? "Could not identify the meal." };
+  } catch (err) {
+    if (USE_LOCAL_BACKEND_ONLY) {
+      console.error("❌ Local backend unavailable at", BACKEND_URL, ":", err);
+      throw new Error(`Cannot reach local backend at ${BACKEND_URL}. Is it running?`);
+    }
+    throw err;
   }
-
-  const data = await res.json();
-  return { reply: data.reply ?? "Could not identify the meal." };
 }
 
 // ── Chat session management ───────────────────────────────────

@@ -66,7 +66,7 @@ export default function QuickPage() {
           </div>
           <div>
             <h1 style={styles.pageTitle}>Quick Recommendations</h1>
-            <p style={styles.pageSub}>Two quick picks — instant meal suggestions.</p>
+            <p style={styles.pageSub}>Two quick picks, instant meal suggestions.</p>
           </div>
         </div>
 
@@ -77,7 +77,7 @@ export default function QuickPage() {
               <div>
                 <h2 style={styles.resultsTitle}>Your Quick Picks</h2>
                 <p style={styles.resultsSub}>
-                  {mealType} · {foodCategory} — {results.length} dish{results.length !== 1 ? "es" : ""} found
+                  {mealType} · {foodCategory} , {results.length} dish{results.length !== 1 ? "es" : ""} found
                 </p>
               </div>
               <button onClick={handleReset} style={styles.resetBtn} id="quick-reset-btn">
