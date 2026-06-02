@@ -59,7 +59,7 @@ export default function HomePage() {
             <div style={styles.heroImageCard}>
               <Image
                 src="/hero-food.jpg"
-                alt="Colourful bowl of Nigerian jollof rice surrounded by fresh ingredients"
+                alt="Colourful bowl of Cameroonian jollof rice surrounded by fresh ingredients"
                 width={480}
                 height={420}
                 priority
@@ -143,7 +143,7 @@ export default function HomePage() {
         <div className="page-wrapper cta-banner-inner">
           <div>
             <h2 style={styles.ctaTitle}>Ready to eat smarter?</h2>
-            <p style={styles.ctaSub}>Start with a personalised recommendation — it only takes 2 minutes.</p>
+            <p style={styles.ctaSub}>Start with a personalised recommendation, it only takes less than 2 minutes.</p>
           </div>
           <Link href="/personalized" style={styles.ctaBannerBtn} id="cta-banner-btn">
             Get Started <ChevronRight size={16} />

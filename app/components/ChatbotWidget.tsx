@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageSquareText, X, Send, ChefHat, ImagePlus, Trash2, History } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   sendChatMessage,
   identifyMealFromImage,
@@ -17,36 +19,6 @@ const GREETING: ChatMessage = {
   role: "assistant",
   content: "Hi! I'm CamChef 🍲, your Cameroonian food AI. Ask me anything about dishes, nutrition, or meal recommendations, or upload a photo to identify a meal!",
 };
-
-function formatMessage(text: string) {
-  // Replace text emojis with actual emojis
-  let formatted = text
-    .replace(/\*(smiles|smiling|smile face|smiling face|smiles broadly)\*/gi, "😊")
-    .replace(/\*(winks|winking)\*/gi, "😉")
-    .replace(/\*(laughs|laughing|chuckles)\*/gi, "😂")
-    .replace(/\*(nods)\*/gi, "👍")
-    .replace(/\*([^*]+)\*/g, "😊"); // Fallback for other single asterisk roleplay actions if needed, though risky. Wait, I'll just map the common ones. Let's adjust this to just do the specific ones.
-    
-  formatted = text
-    .replace(/\*(smiles|smiling|smile face|smiling face|smiles broadly)\*/gi, "😊")
-    .replace(/\*(winks|winking)\*/gi, "😉")
-    .replace(/\*(laughs|laughing|chuckles)\*/gi, "😂")
-    .replace(/\*(nods)\*/gi, "👍");
-
-  // Handle bold (**text**)
-  const parts = formatted.split(/(\*\*.*?\*\*)/g);
-
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return <strong key={index}>{part.slice(2, -2)}</strong>;
-        }
-        return <span key={index}>{part}</span>;
-      })}
-    </>
-  );
-}
 
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
@@ -166,7 +138,36 @@ export default function ChatbotWidget() {
   if (!isLoaded || !isSignedIn) return null;
 
   return (
-    <>
+    <div className={open ? "chatbot-open" : ""}>
+      <style>{`
+        @media (max-width: 768px) {
+          .chatbot-drawer {
+            bottom: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100dvh !important;
+            max-height: 100dvh !important;
+            border-radius: 0 !important;
+            border: none !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          .chatbot-open #chatbot-fab {
+            display: none !important;
+          }
+        }
+        .markdown-body p { margin-bottom: 0.5em; }
+        .markdown-body p:last-child { margin-bottom: 0; }
+        .markdown-body ul { padding-left: 1.5em; margin-bottom: 0.5em; list-style-type: disc; }
+        .markdown-body ol { padding-left: 1.5em; margin-bottom: 0.5em; list-style-type: decimal; }
+        .markdown-body li { margin-bottom: 0.25em; }
+        .markdown-body strong { font-weight: 700; }
+        .markdown-body em { font-style: italic; }
+        .markdown-body h3 { font-size: 1.1em; font-weight: 700; margin-top: 0.8em; margin-bottom: 0.4em; }
+        .markdown-body h4 { font-size: 1em; font-weight: 700; margin-top: 0.6em; margin-bottom: 0.3em; }
+      `}</style>
+
       {/* FAB */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -265,8 +266,10 @@ export default function ChatbotWidget() {
                         <ChefHat size={13} color="var(--green-500)" />
                       </div>
                     )}
-                    <div style={msg.role === "user" ? styles.userBubble : styles.aiBubble}>
-                      {formatMessage(msg.content)}
+                    <div style={msg.role === "user" ? styles.userBubble : styles.aiBubble} className="markdown-body">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {msg.content}
+                      </ReactMarkdown>
                     </div>
                   </div>
                 ))}
@@ -353,7 +356,7 @@ export default function ChatbotWidget() {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }
 
