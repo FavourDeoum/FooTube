@@ -561,7 +561,7 @@ export default function AdminDashboard() {
             </button>
           </nav>
 
-          <div style={{ backgroundColor: "#111827", padding: "20px", borderRadius: "16px", color: "white" }}>
+          <div style={{ backgroundColor: "#111827", padding: "20px", borderRadius: "16px", color: "white", marginBottom: "35px" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: "0.75rem", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total Dishes</span>
               <span style={{ fontSize: "1.8rem", fontWeight: 800 }}>{dishesList.length}</span>
