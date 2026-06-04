@@ -7,6 +7,7 @@ import type { Dish } from "../../lib/mockData";
 import { useAuth } from "@clerk/nextjs";
 import DishCard from "../components/DishCard";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { RevealSection } from "../components/RevealSection";
 
 const CATEGORIES = ["All", "Traditional", "Soup", "Protein", "Breakfast", "Light", "Snack"] as const;
 const MEAL_TYPES = ["All", "Breakfast", "Lunch", "Dinner"] as const;
@@ -52,70 +53,74 @@ export default function ExplorePage() {
     <div style={styles.page}>
       <div className="page-wrapper">
         {/* Page header */}
-        <div style={styles.pageHeader}>
-          <div style={styles.headerLeft}>
-            <div style={styles.pageIcon}>
-              <UtensilsCrossed size={28} color="var(--green-500)" strokeWidth={1.8} />
+        <RevealSection direction="up">
+          <div style={styles.pageHeader}>
+            <div style={styles.headerLeft}>
+              <div style={styles.pageIcon}>
+                <UtensilsCrossed size={28} color="var(--green-500)" strokeWidth={1.8} />
+              </div>
+              <div>
+                <h1 style={styles.pageTitle}>Explore Dishes</h1>
+                <p style={styles.pageSub}>Browse {dishes.length} authentic Cameroonian dishes</p>
+              </div>
             </div>
-            <div>
-              <h1 style={styles.pageTitle}>Explore Dishes</h1>
-              <p style={styles.pageSub}>Browse {dishes.length} authentic Cameroonian dishes</p>
-            </div>
-          </div>
 
-          {/* Search */}
-          <div style={styles.searchWrap}>
-            <Search size={16} color="var(--charcoal-200)" style={styles.searchIcon} />
-            <input
-              id="explore-search"
-              style={styles.searchInput}
-              placeholder="Search dishes…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            {/* Search */}
+            <div style={styles.searchWrap}>
+              <Search size={16} color="var(--charcoal-200)" style={styles.searchIcon} />
+              <input
+                id="explore-search"
+                style={styles.searchInput}
+                placeholder="Search dishes…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
+        </RevealSection>
 
         {/* Filters */}
-        <div style={styles.filtersBar}>
-          <div style={styles.filterGroup}>
-            <SlidersHorizontal size={14} color="var(--text-secondary)" />
-            <span style={styles.filterGroupLabel}>Category:</span>
-            <div className="filter-pills-scroll">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  id={`cat-${cat.toLowerCase()}`}
-                  onClick={() => setActiveCategory(cat)}
-                  style={{
-                    ...styles.filterPill,
-                    ...(activeCategory === cat ? styles.filterPillActive : {}),
-                  }}
-                >
-                  {cat}
-                </button>
-              ))}
+        <RevealSection direction="fade" delay={120}>
+          <div style={styles.filtersBar}>
+            <div style={styles.filterGroup}>
+              <SlidersHorizontal size={14} color="var(--text-secondary)" />
+              <span style={styles.filterGroupLabel}>Category:</span>
+              <div className="filter-pills-scroll">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    id={`cat-${cat.toLowerCase()}`}
+                    onClick={() => setActiveCategory(cat)}
+                    style={{
+                      ...styles.filterPill,
+                      ...(activeCategory === cat ? styles.filterPillActive : {}),
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={styles.filterGroup}>
+              <span style={styles.filterGroupLabel}>Meal:</span>
+              <div style={styles.filterPills}>
+                {MEAL_TYPES.map((m) => (
+                  <button
+                    key={m}
+                    id={`meal-${m.toLowerCase()}`}
+                    onClick={() => setActiveMeal(m)}
+                    style={{
+                      ...styles.filterPill,
+                      ...(activeMeal === m ? styles.filterPillActive : {}),
+                    }}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div style={styles.filterGroup}>
-            <span style={styles.filterGroupLabel}>Meal:</span>
-            <div style={styles.filterPills}>
-              {MEAL_TYPES.map((m) => (
-                <button
-                  key={m}
-                  id={`meal-${m.toLowerCase()}`}
-                  onClick={() => setActiveMeal(m)}
-                  style={{
-                    ...styles.filterPill,
-                    ...(activeMeal === m ? styles.filterPillActive : {}),
-                  }}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        </RevealSection>
 
         {/* Results count */}
         {!loading && (

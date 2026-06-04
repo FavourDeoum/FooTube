@@ -149,7 +149,7 @@ export default function PersonalizedPage() {
             activityLevel: data.activity_level,
             mealCategory: autoMeal,
           };
-          
+
           const recs = await getPersonalizedRecommendations(input, user?.id);
           setResults(recs);
           setMode("dashboard");
@@ -258,8 +258,8 @@ export default function PersonalizedPage() {
     return (
       <div style={{ ...styles.page, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
         <div style={styles.formCard}>
-          <div style={{...styles.pageIcon, margin: '0 auto 20px'}}>
-             <Lock size={28} color="var(--green-500)" />
+          <div style={{ ...styles.pageIcon, margin: '0 auto 20px' }}>
+            <Lock size={28} color="var(--green-500)" />
           </div>
           <h1 style={styles.pageTitle}>Access Restricted</h1>
           <p style={{ ...styles.pageSub, marginBottom: '24px' }}>Please sign up or sign in to get personalized meal recommendations based on your health profile.</p>
@@ -277,14 +277,14 @@ export default function PersonalizedPage() {
       <div style={styles.page}>
         <div className="page-wrapper">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>
-             <Link href="/" style={{ ...styles.backLink, marginBottom: 0 }}>
-               <ArrowLeft size={16} /> Back to Home
-             </Link>
-             <button onClick={handleEditPreferences} style={{ ...styles.backLink, marginBottom: 0 }}>
-                Edit Profile
-             </button>
+            <Link href="/" style={{ ...styles.backLink, marginBottom: 0 }}>
+              <ArrowLeft size={16} /> Back to Home
+            </Link>
+            <button onClick={handleEditPreferences} style={{ ...styles.backLink, marginBottom: 0 }}>
+              Edit Profile
+            </button>
           </div>
-          
+
           <div style={styles.resultsHeader}>
             <div>
               <h1 style={styles.pageTitle}>Good {timeOfDayMeal === "Breakfast" ? "Morning" : timeOfDayMeal === "Lunch" ? "Afternoon" : "Evening"}, {name.split(' ')[0]}!</h1>

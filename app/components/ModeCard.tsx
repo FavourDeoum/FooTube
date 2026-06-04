@@ -29,7 +29,7 @@ export default function ModeCard({
         <h3 style={styles.title}>{title}</h3>
         <p style={styles.desc}>{description}</p>
       </div>
-      <div style={styles.arrow}>
+      <div style={styles.arrow} className="mode-card-arrow">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>
@@ -108,6 +108,6 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: "var(--cream-100)",
     color: "var(--green-500)",
     alignSelf: "flex-start",
-    transition: "background-color var(--transition), transform var(--transition)",
+    transition: "background-color var(--transition), transform var(--transition-bounce)",
   },
 };

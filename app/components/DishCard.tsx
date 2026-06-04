@@ -64,7 +64,7 @@ export default function DishCard({ dish, animDelay = 0 }: DishCardProps) {
         ...styles.card,
         animationDelay: `${animDelay}ms`,
       }}
-      className="animate-fade-in-up"
+      className="animate-fade-in-up dish-card-item"
     >
       {/* Image */}
       <div style={styles.imageWrap}>
@@ -74,6 +74,7 @@ export default function DishCard({ dish, animDelay = 0 }: DishCardProps) {
           fill
           unoptimized={true}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="image-zoom"
           style={{ objectFit: "cover" }}
         />
         <div style={styles.categoryBadge}>

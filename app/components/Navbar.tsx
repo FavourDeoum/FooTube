@@ -23,7 +23,7 @@ export default function Navbar() {
       <div className="page-wrapper" style={styles.inner}>
         {/* Logo */}
         <Link href="/" style={styles.logo}>
-          <span style={styles.logoIcon}>
+          <span style={styles.logoIcon} className="logo-icon-hover">
             <UtensilsCrossed size={22} color="#2D6A4F" strokeWidth={2.2} />
           </span>
           <span style={styles.logoText}>
@@ -39,6 +39,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                className={`nav-link-hover${active ? " active-link" : ""}`}
                 style={{
                   ...styles.navLink,
                   ...(active ? styles.navLinkActive : {}),
@@ -54,12 +55,12 @@ export default function Navbar() {
         {/* CTA — hidden on mobile via CSS class */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }} className="nav-cta-desktop">
           {(!isLoaded || !isSignedIn) ? (
-            <Link href="/sign-in" style={styles.ctaBtn}>
+            <Link href="/sign-in" style={styles.ctaBtn} className="btn-shine btn-primary-hover">
               Sign In
             </Link>
           ) : (
             <>
-              <Link href="/personalized" style={styles.ctaBtn}>
+              <Link href="/personalized" style={styles.ctaBtn} className="btn-shine btn-primary-hover">
                 Dashboard
               </Link>
               <UserButton/>
@@ -81,7 +82,7 @@ export default function Navbar() {
 
       {/* Mobile drawer */}
       {open && (
-        <div style={styles.mobileDrawer} className="animate-fade-in">
+        <div style={styles.mobileDrawer} className="animate-slide-in">
           {navLinks.map((link) => (
             <Link
               key={link.href}
