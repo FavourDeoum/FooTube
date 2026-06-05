@@ -90,6 +90,7 @@ export default function PersonalizedPage() {
   const [step, setStep] = useState(0);
   const [results, setResults] = useState<any[] | null>(null);
   const [timeOfDayMeal, setTimeOfDayMeal] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
   /* ── Form States ────────────────────────────────────────── */
   const [name, setName] = useState("");
@@ -97,12 +98,22 @@ export default function PersonalizedPage() {
   const [gender, setGender] = useState("");
   const [location, setLocation] = useState("");
   const [healthConditions, setHealthConditions] = useState<MultiSelect>([]);
+  const [customHealthCondition, setCustomHealthCondition] = useState("");
   const [dietaryPreference, setDietaryPreference] = useState("");
+  const [customDietaryPref, setCustomDietaryPref] = useState("");
   const [foodAllergies, setFoodAllergies] = useState<MultiSelect>(["None"]);
+  const [customFoodAllergy, setCustomFoodAllergy] = useState("");
   const [activityLevel, setActivityLevel] = useState("");
   const [mealCategory, setMealCategory] = useState("");
 
   /* ── Sync logic ─────────────────────────────────────────── */
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -173,6 +184,39 @@ export default function PersonalizedPage() {
       const without = list.filter((v) => v !== exclusive);
       if (without.includes(value)) setList(without.filter((v) => v !== value));
       else setList([...without, value]);
+    }
+  }
+
+  function addCustomHealthCondition() {
+    if (customHealthCondition.trim() && !healthConditions.includes(customHealthCondition)) {
+      setHealthConditions([...healthConditions, customHealthCondition.trim()]);
+      setCustomHealthCondition("");
+    }
+  }
+
+  function addCustomDietaryPref() {
+    if (customDietaryPref.trim() && !dietaryPreference) {
+      setDietaryPreference(customDietaryPref.trim());
+      setCustomDietaryPref("");
+    }
+  }
+
+  function addCustomFoodAllergy() {
+    if (customFoodAllergy.trim() && !foodAllergies.includes(customFoodAllergy)) {
+      setFoodAllergies([...foodAllergies, customFoodAllergy.trim()]);
+      setCustomFoodAllergy("");
+    }
+  }
+
+  function removeCustomHealth(item: string) {
+    if (!HEALTH_CONDITIONS.includes(item)) {
+      setHealthConditions(healthConditions.filter((h) => h !== item));
+    }
+  }
+
+  function removeCustomAllergy(item: string) {
+    if (!FOOD_ALLERGIES.includes(item)) {
+      setFoodAllergies(foodAllergies.filter((a) => a !== item));
     }
   }
 
@@ -373,6 +417,22 @@ export default function PersonalizedPage() {
                       onToggle={() => toggleMulti(healthConditions, setHealthConditions, c, "None")} />
                   ))}
                 </div>
+                {healthConditions.filter(h => !HEALTH_CONDITIONS.includes(h)).map((custom) => (
+                  <div key={custom} style={{ ...styles.customChip, display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 12px", backgroundColor: "var(--green-50)", border: "2px solid var(--green-500)", borderRadius: "var(--radius-full)", fontSize: "0.85rem", fontWeight: 600, color: "var(--green-600)" }}>
+                    {custom}
+                    <button onClick={() => removeCustomHealth(custom)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "1rem" }}>×</button>
+                  </div>
+                ))}
+                <div style={styles.customInputRow}>
+                  <input 
+                    style={styles.customInput} 
+                    placeholder="Or type your condition..." 
+                    value={customHealthCondition} 
+                    onChange={(e) => setCustomHealthCondition(e.target.value)} 
+                    onKeyDown={(e) => e.key === 'Enter' && addCustomHealthCondition()}
+                  />
+                  <button onClick={addCustomHealthCondition} style={styles.addBtn}>Add</button>
+                </div>
               </div>
             </div>
           )}
@@ -387,6 +447,22 @@ export default function PersonalizedPage() {
                     <ToggleChip key={p} id={`diet-${p}`} label={p} selected={dietaryPreference === p} onToggle={() => setDietaryPreference(p)} />
                   ))}
                 </div>
+                {dietaryPreference && !DIETARY_PREFS.includes(dietaryPreference) && (
+                  <div style={{ ...styles.customChip, display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 12px", backgroundColor: "var(--green-50)", border: "2px solid var(--green-500)", borderRadius: "var(--radius-full)", fontSize: "0.85rem", fontWeight: 600, color: "var(--green-600)" }}>
+                    {dietaryPreference}
+                    <button onClick={() => setDietaryPreference("")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "1rem" }}>×</button>
+                  </div>
+                )}
+                <div style={styles.customInputRow}>
+                  <input 
+                    style={styles.customInput} 
+                    placeholder="Or type your preference..." 
+                    value={customDietaryPref} 
+                    onChange={(e) => setCustomDietaryPref(e.target.value)} 
+                    onKeyDown={(e) => e.key === 'Enter' && addCustomDietaryPref()}
+                  />
+                  <button onClick={addCustomDietaryPref} style={styles.addBtn}>Add</button>
+                </div>
               </div>
               <div style={styles.field}>
                 <label style={styles.label}>Food Allergies</label>
@@ -395,6 +471,22 @@ export default function PersonalizedPage() {
                     <ToggleChip key={a} id={`allergy-${a}`} label={a} selected={foodAllergies.includes(a)}
                       onToggle={() => toggleMulti(foodAllergies, setFoodAllergies, a, "None")} />
                   ))}
+                </div>
+                {foodAllergies.filter(a => !FOOD_ALLERGIES.includes(a)).map((custom) => (
+                  <div key={custom} style={{ ...styles.customChip, display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 12px", backgroundColor: "var(--green-50)", border: "2px solid var(--green-500)", borderRadius: "var(--radius-full)", fontSize: "0.85rem", fontWeight: 600, color: "var(--green-600)" }}>
+                    {custom}
+                    <button onClick={() => removeCustomAllergy(custom)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "1rem" }}>×</button>
+                  </div>
+                ))}
+                <div style={styles.customInputRow}>
+                  <input 
+                    style={styles.customInput} 
+                    placeholder="Or type an allergy..." 
+                    value={customFoodAllergy} 
+                    onChange={(e) => setCustomFoodAllergy(e.target.value)} 
+                    onKeyDown={(e) => e.key === 'Enter' && addCustomFoodAllergy()}
+                  />
+                  <button onClick={addCustomFoodAllergy} style={styles.addBtn}>Add</button>
                 </div>
               </div>
               <div style={styles.field}>
@@ -419,19 +511,19 @@ export default function PersonalizedPage() {
 
           {error && <p style={styles.errorMsg}>{error}</p>}
 
-          <div style={styles.navRow}>
+          <div style={isMobile ? styles.navRowMobile : styles.navRow}>
             {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)} style={styles.prevBtn}>
+              <button onClick={() => setStep(s => s - 1)} style={isMobile ? styles.prevBtnMobile : styles.prevBtn}>
                 <ChevronLeft size={16} /> Previous
               </button>
             )}
-            <div style={{ flex: 1 }} />
+            {!isMobile && <div style={{ flex: 1 }} />}
             {step < STEPS.length - 1 ? (
-              <button onClick={() => validateStep() && setStep(s => s + 1)} style={styles.nextBtn}>
+              <button onClick={() => validateStep() && setStep(s => s + 1)} style={isMobile ? styles.nextBtnMobile : styles.nextBtn}>
                 Next Step <ChevronRight size={16} />
               </button>
             ) : (
-              <button onClick={handleSubmit} disabled={loading} style={{ ...styles.nextBtn, opacity: loading ? 0.7 : 1 }}>
+              <button onClick={handleSubmit} disabled={loading} style={{ ...(isMobile ? styles.nextBtnMobile : styles.nextBtn), opacity: loading ? 0.7 : 1 }}>
                 {loading ? <LoadingSpinner size={18} /> : "Get Recommendations"} <ChevronRight size={16} />
               </button>
             )}
@@ -481,10 +573,80 @@ const styles: Record<string, React.CSSProperties> = {
   genderBtn: { flex: 1, padding: "10px 8px", borderRadius: "var(--radius-md)", border: "2px solid var(--border)", backgroundColor: "var(--cream)", cursor: "pointer", fontSize: "0.875rem", color: "var(--text-secondary)" },
   genderBtnActive: { border: "2px solid var(--green-500)", backgroundColor: "var(--green-50)", color: "var(--green-600)", fontWeight: 600 },
   chipGrid: { display: "flex", flexWrap: "wrap", gap: "8px" },
+  customInputRow: { display: "flex", gap: "8px", marginTop: "12px" },
+  customInput: { flex: 1, padding: "10px 12px", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", backgroundColor: "var(--cream)", fontSize: "0.875rem", outline: "none" },
+  addBtn: { padding: "10px 16px", borderRadius: "var(--radius-md)", border: "2px solid var(--green-500)", backgroundColor: "var(--green-500)", color: "#fff", fontWeight: 600, cursor: "pointer", fontSize: "0.875rem" },
+  customChip: { display: "inline-flex", marginRight: "8px", marginBottom: "8px" },
   activityGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" },
-  navRow: { display: "flex", alignItems: "center", paddingTop: "8px" },
-  prevBtn: { display: "flex", alignItems: "center", gap: "6px", padding: "10px 20px", borderRadius: "var(--radius-full)", border: "1.5px solid var(--border)", backgroundColor: "transparent", cursor: "pointer", fontWeight: 600, color: "var(--text-secondary)" },
-  nextBtn: { display: "flex", alignItems: "center", gap: "6px", padding: "12px 24px", borderRadius: "var(--radius-full)", border: "none", backgroundColor: "var(--green-500)", color: "#fff", cursor: "pointer", fontSize: "0.9rem", fontWeight: 600 },
+  navRow: { 
+    display: "flex", 
+    alignItems: "center", 
+    paddingTop: "8px",
+    gap: "12px"
+  },
+  navRowMobile: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "stretch",
+    paddingTop: "8px",
+    gap: "12px"
+  },
+  prevBtn: { 
+    display: "flex", 
+    alignItems: "center", 
+    gap: "6px", 
+    padding: "10px 20px", 
+    borderRadius: "var(--radius-full)", 
+    border: "1.5px solid var(--border)", 
+    backgroundColor: "transparent", 
+    cursor: "pointer", 
+    fontWeight: 600, 
+    color: "var(--text-secondary)"
+  },
+  prevBtnMobile: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    padding: "12px 20px",
+    borderRadius: "var(--radius-full)",
+    border: "1.5px solid var(--border)",
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    fontWeight: 600,
+    color: "var(--text-secondary)",
+    width: "100%",
+    order: 1
+  },
+  nextBtn: { 
+    display: "flex", 
+    alignItems: "center", 
+    gap: "6px", 
+    padding: "12px 24px", 
+    borderRadius: "var(--radius-full)", 
+    border: "none", 
+    backgroundColor: "var(--green-500)", 
+    color: "#fff", 
+    cursor: "pointer", 
+    fontSize: "0.9rem", 
+    fontWeight: 600
+  },
+  nextBtnMobile: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    padding: "12px 24px",
+    borderRadius: "var(--radius-full)",
+    border: "none",
+    backgroundColor: "var(--green-500)",
+    color: "#fff",
+    cursor: "pointer",
+    fontSize: "0.9rem",
+    fontWeight: 600,
+    width: "100%",
+    order: 2
+  },
   errorMsg: { color: "#c0392b", fontSize: "0.875rem", marginBottom: "12px", fontWeight: 500 },
   resultsHeader: { marginBottom: "28px" },
   resultsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" },

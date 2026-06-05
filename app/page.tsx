@@ -132,7 +132,7 @@ export default function HomePage() {
             {[
               { icon: <Brain size={32} color="var(--green-500)" strokeWidth={1.5} />, title: "AI-Driven", desc: "Recommendations powered by smart algorithms that learn your preferences." },
               { icon: <Leaf size={32} color="var(--green-500)" strokeWidth={1.5} />, title: "Health-Aware", desc: "Accounts for diabetes, BP, allergies, weight goals, and more." },
-              { icon: <MessageSquareText size={32} color="var(--green-500)" strokeWidth={1.5} />, title: "Chat Anytime", desc: "Ask our food assistant anything — available on every page." },
+              { icon: <MessageSquareText size={32} color="var(--green-500)" strokeWidth={1.5} />, title: "Chat Anytime", desc: "Ask our food assistant anything, available on every page." },
               { icon: <Smartphone size={32} color="var(--green-500)" strokeWidth={1.5} />, title: "Mobile Ready", desc: "Looks great on phones, tablets, and desktops alike." },
             ].map((f) => (
               <div key={f.title} style={styles.featureItem} className="feature-item-hover">
