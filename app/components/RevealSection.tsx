@@ -27,7 +27,6 @@ export function RevealSection({
   const ref = useScrollReveal<HTMLDivElement>({
     threshold: 0.06,
     rootMargin: "0px 0px -20px 0px",
-    delay: stagger ? 60 : 100,
   });
 
   const revealClass = stagger ? "stagger-children" : `reveal-${direction}`;
