@@ -283,9 +283,10 @@ export default function AdminDashboard() {
       });
       loadDishes();
       setActiveTab("overview");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setStatus({ type: "error", msg: err.message || `Failed to ${editingDishId ? "update" : "add"} dish` });
+      const errorMessage = err instanceof Error ? err.message : `Failed to ${editingDishId ? "update" : "add"} dish`;
+      setStatus({ type: "error", msg: errorMessage });
     } finally {
       setUploading(false);
     }
