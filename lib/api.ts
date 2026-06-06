@@ -143,23 +143,23 @@ export async function getPersonalizedRecommendations(
   // Try AI-powered backend first if userId is available
   if (userId) {
     try {
+      // ✅ Pass mode=personalized so the backend applies:
+      //    - Health condition scoring
+      //    - BMI-based scoring
+      //    - Allergy filtering
+      //    - ML diet classification
       const res = await fetchWithTimeout(
-        `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}`,
+        `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}?mode=personalized`,
         { method: "GET" }
       );
       if (res.ok) {
         const json = await res.json();
         if (json.status === "success" && Array.isArray(json.data) && json.data.length > 0) {
-          const mapped = json.data.map((d: any) =>
+          // ✅ Trust the backend's ranking fully — no extra client-side meal filtering.
+          //    The backend already boosts dishes by time-of-day (+5000) and health/BMI fit.
+          return json.data.map((d: any) =>
             d.short_description !== undefined ? mapDishFromDB(d) : (d as Dish)
           );
-          // Filter by meal category
-          const filtered = mapped.filter((d: Dish) =>
-            d.mealType.some((m) =>
-              m.toLowerCase().includes(input.mealCategory.toLowerCase())
-            )
-          );
-          return filtered.length > 0 ? filtered.slice(0, 4) : mapped.slice(0, 4);
         }
       }
     } catch (err) {
