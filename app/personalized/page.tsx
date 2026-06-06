@@ -339,21 +339,7 @@ export default function PersonalizedPage() {
             <div>
               <h1 style={styles.pageTitle}>Good {timeOfDayMeal === "Breakfast" ? "Morning" : timeOfDayMeal === "Lunch" ? "Afternoon" : "Evening"}, {name.split(' ')[0]}!</h1>
               <p style={styles.pageSub}>Here are your smart <strong>{timeOfDayMeal}</strong> recommendations based on your profile.</p>
-              {weight && height && (() => {
-                const bmiVal = parseFloat(weight) / Math.pow(parseFloat(height) / 100, 2);
-                const bmiLabel = bmiVal < 18.5 ? "Underweight" : bmiVal < 25 ? "Normal" : bmiVal < 30 ? "Overweight" : "Obese";
-                const bmiColor = bmiVal < 18.5 ? "#e67e22" : bmiVal < 25 ? "var(--green-600)" : bmiVal < 30 ? "#e67e22" : "#c0392b";
-                return (
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '10px', padding: '5px 12px', borderRadius: 'var(--radius-full)', border: `1.5px solid ${bmiColor}`, backgroundColor: `${bmiColor}15` }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: bmiColor }}>
-                      BMI {bmiVal.toFixed(1)} · {bmiLabel}
-                    </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                      — recommendations tuned to your body
-                    </span>
-                  </div>
-                );
-              })()}
+
             </div>
           </div>
           <div style={styles.resultsGrid}>
