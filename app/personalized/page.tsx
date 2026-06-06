@@ -97,6 +97,8 @@ export default function PersonalizedPage() {
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [location, setLocation] = useState("");
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
   const [healthConditions, setHealthConditions] = useState<MultiSelect>([]);
   const [customHealthCondition, setCustomHealthCondition] = useState("");
   const [dietaryPreference, setDietaryPreference] = useState("");
@@ -136,6 +138,8 @@ export default function PersonalizedPage() {
           setAge(data.age.toString());
           setGender(data.gender);
           setLocation(data.location || "");
+          setWeight(data.weight ? data.weight.toString() : "");
+          setHeight(data.height ? data.height.toString() : "");
           setHealthConditions(data.health_conditions || []);
           setDietaryPreference(data.dietary_preference || "");
           setFoodAllergies(data.food_allergies || ["None"]);
@@ -221,8 +225,8 @@ export default function PersonalizedPage() {
   }
 
   function validateStep() {
-    if (step === 0 && (!name.trim() || !age || !gender || !location.trim())) {
-      setError("Please fill in all basic fields."); return false;
+    if (step === 0 && (!name.trim() || !age || !gender || !location.trim() || !weight || !height)) {
+      setError("Please fill in all basic fields including weight and height."); return false;
     }
     if (step === 1 && healthConditions.length === 0) {
       setError("Please select at least one health condition (or 'None')."); return false;
@@ -243,6 +247,8 @@ export default function PersonalizedPage() {
       age: parseInt(age),
       gender,
       location: location.trim(),
+      weight: parseFloat(weight),
+      height: parseFloat(height),
       health_conditions: healthConditions,
       dietary_preference: dietaryPreference,
       food_allergies: foodAllergies,
@@ -333,6 +339,21 @@ export default function PersonalizedPage() {
             <div>
               <h1 style={styles.pageTitle}>Good {timeOfDayMeal === "Breakfast" ? "Morning" : timeOfDayMeal === "Lunch" ? "Afternoon" : "Evening"}, {name.split(' ')[0]}!</h1>
               <p style={styles.pageSub}>Here are your smart <strong>{timeOfDayMeal}</strong> recommendations based on your profile.</p>
+              {weight && height && (() => {
+                const bmiVal = parseFloat(weight) / Math.pow(parseFloat(height) / 100, 2);
+                const bmiLabel = bmiVal < 18.5 ? "Underweight" : bmiVal < 25 ? "Normal" : bmiVal < 30 ? "Overweight" : "Obese";
+                const bmiColor = bmiVal < 18.5 ? "#e67e22" : bmiVal < 25 ? "var(--green-600)" : bmiVal < 30 ? "#e67e22" : "#c0392b";
+                return (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '10px', padding: '5px 12px', borderRadius: 'var(--radius-full)', border: `1.5px solid ${bmiColor}`, backgroundColor: `${bmiColor}15` }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: bmiColor }}>
+                      BMI {bmiVal.toFixed(1)} · {bmiLabel}
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                      — recommendations tuned to your body
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
           </div>
           <div style={styles.resultsGrid}>
@@ -397,6 +418,34 @@ export default function PersonalizedPage() {
                       <button key={g} onClick={() => setGender(g)} style={{ ...styles.genderBtn, ...(gender === g ? styles.genderBtnActive : {}) }}>{g}</button>
                     ))}
                   </div>
+                </div>
+              </div>
+              <div style={styles.twoCol}>
+                <div style={styles.field}>
+                  <label style={styles.label}>Weight (kg)</label>
+                  <input
+                    type="number"
+                    min="20"
+                    max="300"
+                    step="0.1"
+                    style={styles.input}
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    placeholder="e.g. 70"
+                  />
+                </div>
+                <div style={styles.field}>
+                  <label style={styles.label}>Height (cm)</label>
+                  <input
+                    type="number"
+                    min="50"
+                    max="250"
+                    step="0.5"
+                    style={styles.input}
+                    value={height}
+                    onChange={(e) => setHeight(e.target.value)}
+                    placeholder="e.g. 175"
+                  />
                 </div>
               </div>
               <div style={styles.field}>

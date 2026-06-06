@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { MessageSquareText, X, Send, ChefHat, ImagePlus, Trash2, History } from "lucide-react";
+import { MessageSquareText, X, Send, ChefHat, ImagePlus, Trash2, History, ArrowUp } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -31,13 +31,49 @@ export default function ChatbotWidget() {
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showPageScrollTop, setShowPageScrollTop] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isSignedIn, isLoaded, userId } = useAuth();
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
+
+  useEffect(() => {
+    const messagesArea = messagesAreaRef.current;
+    if (!messagesArea) return;
+
+    const handleScroll = () => {
+      const isScrolledDown = messagesArea.scrollHeight - messagesArea.scrollTop > messagesArea.clientHeight + 100;
+      setShowScrollTop(isScrolledDown);
+    };
+
+    messagesArea.addEventListener("scroll", handleScroll);
+    return () => messagesArea.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handlePageScroll = () => {
+      setShowPageScrollTop(window.scrollY > 300);
+    };
+    // Initial check in case the page is already scrolled on mount
+    handlePageScroll();
+    window.addEventListener("scroll", handlePageScroll);
+    return () => window.removeEventListener("scroll", handlePageScroll);
+  }, []);
+
+  function scrollToTop() {
+    if (messagesAreaRef.current) {
+      messagesAreaRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  function scrollPageToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   // Load sessions when opening sessions view
   const loadSessions = useCallback(async () => {
@@ -252,7 +288,7 @@ export default function ChatbotWidget() {
           ) : (
             <>
               {/* Messages */}
-              <div style={styles.messagesArea} id="chat-messages">
+              <div style={styles.messagesArea} id="chat-messages" ref={messagesAreaRef}>
                 {messages.map((msg, i) => (
                   <div
                     key={i}
