@@ -94,7 +94,11 @@ export async function getQuickRecommendations(
       ) ||
       d.category.toLowerCase().includes(input.foodCategory.toLowerCase())
   );
-  return filtered.length > 0 ? filtered.slice(0, 4) : allDishes.slice(0, 4);
+  // Shuffle the results to provide dynamic recommendations on "Try Again"
+  const shuffledFiltered = filtered.sort(() => 0.5 - Math.random());
+  return shuffledFiltered.length > 0 
+    ? shuffledFiltered.slice(0, 4) 
+    : [...allDishes].sort(() => 0.5 - Math.random()).slice(0, 4);
 }
 
 // ── Personalized recommendations via backend feed ─────────────
@@ -149,7 +153,7 @@ export async function getPersonalizedRecommendations(
       //    - Allergy filtering
       //    - ML diet classification
       const res = await fetchWithTimeout(
-        `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}?mode=personalized`,
+        `${BACKEND_URL}/api/feed/${encodeURIComponent(userId)}?mode=personalized&meal_category=${encodeURIComponent(input.mealCategory)}`,
         { method: "GET" }
       );
       if (res.ok) {
